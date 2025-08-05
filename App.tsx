@@ -1,0 +1,25 @@
+import HomeScreen from "@/_src/presentation/screens/HomeScreen";
+import { UsersListScreen } from "@/_src/presentation/screens/UsersListScreen";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import React from "react";
+import ProductScreen from "./_src/presentation/screens/ProductScreen";
+export type RootStackParamList = {
+  Home: undefined;
+  UsersListScreen: undefined;
+  ProductScreen: undefined;
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="UsersListScreen" component={UsersListScreen} />
+        <Stack.Screen name="ProductScreen" component={ProductScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
