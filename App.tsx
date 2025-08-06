@@ -3,11 +3,12 @@ import { UsersListScreen } from "@/_src/presentation/screens/UsersListScreen";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
-import ProductScreen from "./_src/presentation/screens/ProductScreen";
+import { ProductScreen } from "./_src/presentation/screens/ProductScreen";
 export type RootStackParamList = {
   Home: undefined;
   UsersListScreen: undefined;
   ProductScreen: undefined;
+  ProductForm: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();

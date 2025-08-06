@@ -1,23 +1,28 @@
-import { RootStackParamList } from "@/App";
-import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import React from "react";
-import { Text, TouchableOpacity } from "react-native";
+import { runMigrations } from "@/_src/data/db";
+import React, { useEffect, useState } from "react";
+import { ProductForm } from "../components/ProductForm";
+import { useProducts } from "../hooks/useProducts";
 import { Container } from "./style/container";
 
-type HomeScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  "Home"
->;
+export function ProductScreen() {
+  const {products, loading, error, handleCreateProduct} = useProducts();
+  const [dbReady, setDbReady] = useState(false);
 
-export default function ProductScreen() {
-  const navigation = useNavigation<HomeScreenNavigationProp>();
+  useEffect(() => {
+    const initializeDb = async () => {
+      try {
+        await runMigrations();
+        setDbReady(true);
+      } catch (e) {
+        console.error("Failed to initialize database:", e);
+      }
+    };
+    initializeDb();
+  }, []);
 
   return (
     <Container>
-      <TouchableOpacity onPress={() => navigation.navigate("UsersListScreen")}>
-        <Text>Products</Text>
-      </TouchableOpacity>
+        <ProductForm/>    
     </Container>
   );
 }

@@ -8,11 +8,13 @@ const createProductUseCase = new CreateProduct(productRepository);
 
 export const useProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);
-   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleCreateUser = async (product: Omit<Product, "id">) => {
+  const handleCreateProduct = async (product: Omit<Product, "id">) => {
     try {
       await createProductUseCase.execute(product);
+      setProducts([]);
     } catch (err) {
       console.error(err);
       setError("Failed to create user");
@@ -20,5 +22,5 @@ export const useProducts = () => {
   };
 
 
-  return { products, error, handleCreateUser};
+  return {products, loading, error, handleCreateProduct};
 };

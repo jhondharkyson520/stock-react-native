@@ -1,6 +1,6 @@
+import { runMigrations } from "@/_src/data/db";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Button, FlatList, StyleSheet, Text, View } from "react-native";
-import { runMigrations } from "../../data/db";
 import { UserForm } from "../components/UserForm";
 import { UserRow } from "../components/UserRow";
 import { useUsers } from "../hooks/useUsers";
