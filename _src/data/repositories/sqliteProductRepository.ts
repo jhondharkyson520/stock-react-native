@@ -6,8 +6,8 @@ export class SQLiteProductRepository implements IProductRepository {
     async createProduct(product: Omit<Product, "id">): Promise<Product> {
         const db = await getDB();
         const result = await db.runAsync(
-            "INSERT INTO products (name, code, description, qtd, image) VALUES (?, ?, ?, ?, ?)",
-            [product.name, product.code, product.description, product.qtd, product.image]
+            "INSERT INTO products (name, code, description, qtd, value, image) VALUES (?, ?, ?, ?, ?, ?)",
+            [product.name, product.code, product.description, product.qtd, product.value, product.image]
         );
 
         if (result.lastInsertRowId) {

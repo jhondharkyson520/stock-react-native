@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button, StyleSheet, TextInput, View } from "react-native";
 import { useProducts } from "../hooks/useProducts";
 import { Container } from "../screens/style/container";
+import { InputText } from "./style/ProductFormStyle";
 
 
 
@@ -11,7 +12,8 @@ export function ProductForm() {
     name: '', 
     code: '', 
     description: '', 
-    qtd: '', 
+    qtd: '',
+    value: '', 
     image: ''
   });
   const [loading, setLoading] = useState(false);
@@ -27,9 +29,10 @@ export function ProductForm() {
     }
     setLoading(true);
     try{
-      const created = await handleCreateProduct({
+      await handleCreateProduct({
         ...product,
-        qtd: Number(product.qtd)
+        qtd: Number(product.qtd),
+        value: Number(product.value),
       });
 
       setProduct({
@@ -37,6 +40,7 @@ export function ProductForm() {
         code: "",
         description: "",
         qtd: "",
+        value: "",
         image: ""
       });
     } catch(err) {
@@ -46,36 +50,40 @@ export function ProductForm() {
       setLoading(false);
     }
   }
-
+  
   return (
     <Container>
-      <TextInput
-        style={styles.input}
-        placeholder="Name"
+      <InputText
+        placeholder="Nome"
+        placeholderTextColor="#FFFFFF"
         value={product.name}
         onChangeText={(text) => handleChange("name", text)}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Code"
-        value={product.code}
-        onChangeText={(text) => handleChange("code", text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Description"
+      
+      <InputText
+        placeholder="Descrição (opcional)"
+        placeholderTextColor="#FFFFFF"
         value={product.description}
         onChangeText={(text) => handleChange("description", text)}
       />
       <TextInput
-        style={styles.input}
         placeholder="Qtd"
         value={product.qtd}
         keyboardType="numeric"
         onChangeText={(text) => handleChange("qtd", text)}
       />
       <TextInput
-        style={styles.input}
+        placeholder="Value"
+        value={product.value}
+        onChangeText={(text) => handleChange("value", text)}
+      />
+
+      <TextInput
+        placeholder="Code"
+        value={product.code}
+        onChangeText={(text) => handleChange("code", text)}
+      />
+      <TextInput
         placeholder="Image"
         value={product.image}
         onChangeText={(text) => handleChange("image", text)}
@@ -88,14 +96,18 @@ export function ProductForm() {
   );
 }
 
+/*
+  Collor palete
+  .color1 { #bab491 };
+  .color2 { #95906c };
+  .color3 { #706b48 };
+  .color4 { #4a4724 };
+  .color5 { #252200 };
+
+*/
+
 const styles = StyleSheet.create({
-  input: {
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 8,
-  },
+  
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-around",

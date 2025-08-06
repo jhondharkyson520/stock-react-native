@@ -4,5 +4,6 @@ export interface Product {
     code: string;
     description: string | null;
     qtd: number;
+    value: number;
     image: string;
 }

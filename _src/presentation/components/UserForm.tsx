@@ -21,7 +21,7 @@ export function UserForm({ onSave, onCancel }: UserFormProps) {
       alert('Name or Email invalid')
     }
   };
-
+  
   return (
     <View style={styles.container}>
       <TextInput

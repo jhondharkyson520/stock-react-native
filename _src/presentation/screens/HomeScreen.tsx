@@ -21,6 +21,8 @@ export default function HomeScreen() {
       <TouchableOpacity onPress={() => navigation.navigate("UsersListScreen")}>
         <Text>Users</Text>
       </TouchableOpacity>
+    
+
       <Text>Documentos - href = documentScreen</Text>
       <Text>Relatórios - href = relatoriosScreen</Text>
     </Container>
