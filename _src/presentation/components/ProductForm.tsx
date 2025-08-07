@@ -1,14 +1,20 @@
-import { maskValue } from "@/_src/utils/maskValue";
-import React, { useState } from "react";
+import { formatToCurrencyInput } from "@/_src/utils/maskValue";
+import { CameraView, useCameraPermissions } from 'expo-camera';
+import * as FileSystem from 'expo-file-system';
+import * as ImagePicker from 'expo-image-picker';
+import React, { useRef, useState } from "react";
+import { Alert, Button, Image, Modal, ScrollView, View } from "react-native";
 import { useProducts } from "../hooks/useProducts";
 import { Container } from "../screens/style/container";
-import { CircleQtdControll, CircleTextQtdControll, ContainerViewNumbers, InputText, InputTextValue, LabelText, TextQtdControll } from "./style/ProductFormStyle";
-
+import { ButtonSave, CircleQtdControll, CircleTextQtdControll, ContainerImageProduct, ContainerViewNumbers, InputText, InputTextValue, LabelText, OpenCameraScan, TextQtdControll } from "./style/ProductFormStyle";
 
 
 export function ProductForm() {  
   const [loading, setLoading] = useState(false);
   const {products, error, handleCreateProduct} = useProducts();
+  const [modalIsVisible, setModalIsVisible] = useState(false);
+  const [permission, requestPermission] = useCameraPermissions();
+  const barCodeLock = useRef(false);
   const [product, setProduct] = useState({
     name: '', 
     code: '', 
@@ -49,6 +55,7 @@ export function ProductForm() {
         ...product,
         qtd: Number(product.qtd),
         value: Number(product.value),
+        image: product.image
       });
 
       setProduct({
@@ -66,9 +73,59 @@ export function ProductForm() {
       setLoading(false);
     }
   }
+
+  const handleOpenCamera = async () => {
+    try {
+      const {granted} = await requestPermission();
+      if(!granted) {
+        return Alert.alert("Camera", "Você precisa permitir o uso da camera");
+      }
+      setModalIsVisible(true)
+      barCodeLock.current = false;
+    } catch (error) {
+      console.log(error);      
+    }
+  };
+
+  const handleBarCodeRead = (data: string) => {
+    setModalIsVisible(false);
+    Alert.alert("Código", data);   
+  }
+
+  const handleTakePhoto = async () => {
+  try {
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permissionResult.granted) {
+      return Alert.alert("Permissão", "Permissão da câmera é necessária.");
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      quality: 0.7,
+    });
+
+    if (!result.canceled && result.assets.length > 0) {
+      const photo = result.assets[0];
+      const fileName = photo.fileName || `product_${Date.now()}.jpg`;
+      const newPath = FileSystem.documentDirectory + fileName;
+
+      await FileSystem.copyAsync({
+        from: photo.uri,
+        to: newPath,
+      });
+
+      setProduct(prev => ({ ...prev, image: newPath }));
+    }
+  } catch (err) {
+    console.log("Erro ao tirar foto:", err);
+    Alert.alert("Erro", "Não foi possível tirar a foto.");
+  }
+};
+
   
   return (
-    <Container>
+    <ScrollView>
+      <Container>
       <InputText
         placeholder="Nome"
         placeholderTextColor="#FFFFFF"
@@ -98,18 +155,85 @@ export function ProductForm() {
       </ContainerViewNumbers>
 
       <ContainerViewNumbers>
-        <LabelText>Valor:</LabelText>
+        <LabelText>Valor R$:</LabelText>
         <InputTextValue
           placeholderTextColor="#FFFFFF"
-          value={product.value}
+          keyboardType="numeric"
+          value={formatToCurrencyInput(product.value).display}
           onChangeText={(text) => {
-            const masked = maskValue(text);
-            handleChange("value", masked);
+            const { raw } = formatToCurrencyInput(text);
+            handleChange("value", raw);
           }}
         />
       </ContainerViewNumbers>
 
+      <OpenCameraScan onPress={handleOpenCamera}>
+        <LabelText>Clique aqui para ler o código: </LabelText>
+        <Image source={require('../../../assets/Scanner.png')}/>
+      </OpenCameraScan>
+
+      <InputText 
+        placeholder="Código de barras"
+        placeholderTextColor="#FFFFFF"
+        keyboardType="numeric"
+      />
+
+      <View style={{ marginTop: 25, marginBottom: 25, alignItems: "center", justifyContent: "center" }}>
+      <ContainerImageProduct onPress={handleTakePhoto}>
+        {product.image ? (
+          <Image
+            source={{ uri: product.image }}
+            style={{ width: 150, height: 150, borderRadius: 8 }}
+          />
+        ) : (
+          <Image
+            source={require('../../../assets/addImageProduct.png')}
+            style={{ width: 150, height: 150 }}
+          />
+        )}
+      </ContainerImageProduct>
+    </View>
+
+      <ButtonSave onPress={handleSave}>
+        <LabelText>Cadastrar</LabelText>
+      </ButtonSave>
+
+      <Modal visible={modalIsVisible}>
+          <CameraView 
+            style={{ flex: 1}} 
+            facing="back"
+            onBarcodeScanned={({data}) => {
+              if(data && !barCodeLock.current) {
+                barCodeLock.current = true;
+                setTimeout(() => handleBarCodeRead(data), 1700);
+              }
+            }
+            }
+          />
+           <View style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+            <View style={{
+              width: 250,
+              height: 150,
+              borderColor: 'white',
+              borderWidth: 2,
+              borderRadius: 8,
+              backgroundColor: 'rgba(0, 0, 0, 0.2)',
+            }} />
+          </View>
+          <View style={{position: "absolute", bottom: 32, left: 32, right: 32}}>
+              <Button title="Cancelar" onPress={() => setModalIsVisible(false)}/>
+          </View>
+      </Modal>
     </Container>
+    </ScrollView>
   );
 }
 

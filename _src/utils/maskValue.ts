@@ -1,12 +1,14 @@
+export function formatToCurrencyInput(value: string): {display: string; raw: string;} {
+  const numeric = value.replace(/\D/g, "");
 
-export function maskValue(value: string): string {
-    const numericValue = value.replace(/\D/g, '');
-    const floatValue = parseFloat(numericValue) / 100;
+  if (numeric.length === 0) return { display: "", raw: "0" };
+  const float = parseFloat(numeric) / 100;
+  const display = float.toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  
+  const raw = float.toFixed(2);
 
-    if(isNaN(floatValue)) return '';
-
-    return floatValue.toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    })
+  return { display, raw };
 }

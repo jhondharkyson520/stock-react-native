@@ -24,7 +24,7 @@ export async function runMigrations(): Promise<void> {
        name TEXT NOT NULL,
        code TEXT NOT NULL,
        description TEXT,
-       value INTEGER NOT NULL,
+       value REAL NOT NULL,
        qtd INTEGER NOT NULL DEFAULT 0,
        image TEXT NOT NULL DEFAULT '',
        created_date DATE NOT NULL DEFAULT (datetime('now')),
