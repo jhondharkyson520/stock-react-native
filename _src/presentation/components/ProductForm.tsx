@@ -1,22 +1,38 @@
+import { maskValue } from "@/_src/utils/maskValue";
 import React, { useState } from "react";
-import { Button, StyleSheet, TextInput, View } from "react-native";
 import { useProducts } from "../hooks/useProducts";
 import { Container } from "../screens/style/container";
-import { InputText } from "./style/ProductFormStyle";
+import { CircleQtdControll, CircleTextQtdControll, ContainerViewNumbers, InputText, InputTextValue, LabelText, TextQtdControll } from "./style/ProductFormStyle";
 
 
 
-export function ProductForm() {
+export function ProductForm() {  
+  const [loading, setLoading] = useState(false);
   const {products, error, handleCreateProduct} = useProducts();
   const [product, setProduct] = useState({
     name: '', 
     code: '', 
     description: '', 
-    qtd: '',
+    qtd: 1,
     value: '', 
     image: ''
   });
-  const [loading, setLoading] = useState(false);
+
+  const handleDecrease = () => {
+    if(product.qtd > 0) {
+      setProduct(prev => ({
+        ...prev,
+        qtd: prev.qtd - 1
+      }));
+    }
+  };
+
+  const handleIncrease = () => {
+    setProduct(prev => ({
+      ...prev,
+      qtd: prev.qtd + 1
+    }));
+  };
 
   const handleChange = (key: keyof typeof product, value: string) => {
     setProduct(prev => ({...prev, [key]: value}));
@@ -39,7 +55,7 @@ export function ProductForm() {
         name: "",
         code: "",
         description: "",
-        qtd: "",
+        qtd: 0,
         value: "",
         image: ""
       });
@@ -66,32 +82,33 @@ export function ProductForm() {
         value={product.description}
         onChangeText={(text) => handleChange("description", text)}
       />
-      <TextInput
-        placeholder="Qtd"
-        value={product.qtd}
-        keyboardType="numeric"
-        onChangeText={(text) => handleChange("qtd", text)}
-      />
-      <TextInput
-        placeholder="Value"
-        value={product.value}
-        onChangeText={(text) => handleChange("value", text)}
-      />
 
-      <TextInput
-        placeholder="Code"
-        value={product.code}
-        onChangeText={(text) => handleChange("code", text)}
-      />
-      <TextInput
-        placeholder="Image"
-        value={product.image}
-        onChangeText={(text) => handleChange("image", text)}
-      />
-      <View style={styles.buttonContainer}>
-        <Button title="Salvar" onPress={handleSave} />
-        <Button title="Cancelar" color="gray" />
-      </View>
+      
+      <ContainerViewNumbers>
+        <LabelText>Quantidade:</LabelText>
+        <CircleQtdControll onPress={handleDecrease}>
+          <CircleTextQtdControll>-</CircleTextQtdControll>
+        </CircleQtdControll>
+
+        <TextQtdControll>{product.qtd}</TextQtdControll>
+
+        <CircleQtdControll onPress={handleIncrease}>
+          <CircleTextQtdControll>+</CircleTextQtdControll>
+        </CircleQtdControll>
+      </ContainerViewNumbers>
+
+      <ContainerViewNumbers>
+        <LabelText>Valor:</LabelText>
+        <InputTextValue
+          placeholderTextColor="#FFFFFF"
+          value={product.value}
+          onChangeText={(text) => {
+            const masked = maskValue(text);
+            handleChange("value", masked);
+          }}
+        />
+      </ContainerViewNumbers>
+
     </Container>
   );
 }
@@ -105,12 +122,3 @@ export function ProductForm() {
   .color5 { #252200 };
 
 */
-
-const styles = StyleSheet.create({
-  
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 8,
-  },
-});
