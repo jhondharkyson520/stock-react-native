@@ -22,7 +22,7 @@ export function ProductScreen() {
 
   return (
     <Container>
-        <ProductForm/>    
+        <ProductForm/> 
     </Container>
   );
 }

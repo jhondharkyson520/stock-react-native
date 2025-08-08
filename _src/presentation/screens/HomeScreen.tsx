@@ -17,11 +17,15 @@ export default function HomeScreen() {
     <Container>
       <Image source={require('../../../assets/LogoPinguim.png')}/>
       <TouchableOpacity onPress={() => navigation.navigate("ProductScreen")}>
-        <Text>Products</Text>
+        <Text>New Products</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate("ProductsListScreen")}>
+        <Text>Products List</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate("UsersListScreen")}>
         <Text>Users</Text>
       </TouchableOpacity>
+    
     
 
       <Text>Documentos - href = documentScreen</Text>
