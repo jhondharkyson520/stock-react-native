@@ -3,10 +3,11 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useRef, useState } from "react";
-import { Alert, Button, Image, Modal, ScrollView, View } from "react-native";
+import { Alert, Button, Image, Modal, ScrollView, Text, View } from "react-native";
 import { useProducts } from "../hooks/useProducts";
 import { Container } from "../screens/style/container";
-import { ButtonSave, CircleQtdControll, CircleTextQtdControll, ContainerImageProduct, ContainerViewNumbers, InputText, InputTextBarCode, InputTextValue, LabelText, LabelTextButton, OpenCameraScan, TextQtdControll } from "./style/ProductFormStyle";
+import { shadowStyle } from "../screens/style/shadowStyle";
+import { BorderFromImage, ButtonSave, CircleQtdControll, CircleTextQtdControll, ContainerImageProduct, ContainerViewNumbers, InputText, InputTextBarCode, InputTextValue, LabelText, LabelTextButton, OpenCameraScan, TextQtdControll } from "./style/ProductFormStyle";
 
 
 export function ProductForm() {  
@@ -81,7 +82,7 @@ export function ProductForm() {
       const {granted} = await requestPermission();
       if(!granted) {
         return Alert.alert("Camera", "Você precisa permitir o uso da camera");
-      }
+      }      
       setModalIsVisible(true)
       barCodeLock.current = false;
     } catch (error) {
@@ -106,7 +107,7 @@ export function ProductForm() {
     }
 
     const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
+      allowsEditing: false,
       quality: 0.7,
     });
 
@@ -132,7 +133,9 @@ export function ProductForm() {
   return (
     <ScrollView>
       <Container>
+      <Image style={{alignSelf: 'center', marginBottom: 50}} source={require('../../../assets/LogoPinguim.png')}/>
       <InputText
+        style={shadowStyle.shadow}
         placeholder="Nome"
         placeholderTextColor="#000000"
         value={product.name}
@@ -140,6 +143,7 @@ export function ProductForm() {
       />
       
       <InputText
+        style={shadowStyle.shadow}
         placeholder="Descrição (opcional)"
         placeholderTextColor="#000000"
         value={product.description}
@@ -149,13 +153,13 @@ export function ProductForm() {
       
       <ContainerViewNumbers>
         <LabelText>Quantidade:</LabelText>
-        <CircleQtdControll onPress={handleDecrease}>
+        <CircleQtdControll style={shadowStyle.shadow} onPress={handleDecrease}>
           <CircleTextQtdControll>-</CircleTextQtdControll>
         </CircleQtdControll>
 
         <TextQtdControll>{product.qtd}</TextQtdControll>
 
-        <CircleQtdControll onPress={handleIncrease}>
+        <CircleQtdControll style={shadowStyle.shadow} onPress={handleIncrease}>
           <CircleTextQtdControll>+</CircleTextQtdControll>
         </CircleQtdControll>
       </ContainerViewNumbers>
@@ -163,6 +167,7 @@ export function ProductForm() {
       <ContainerViewNumbers>
         <LabelText>Valor R$:</LabelText>
         <InputTextValue
+          style={shadowStyle.shadow}
           placeholderTextColor="#000000"
           keyboardType="numeric"
           value={formatToCurrencyInput(product.value).display}
@@ -173,43 +178,68 @@ export function ProductForm() {
         />
       </ContainerViewNumbers>
 
-      <ContainerViewNumbers>
-          <OpenCameraScan onPress={handleOpenCamera}>
-            <Image 
-              source={require('../../../assets/iconBarCode.png')}
-               style={{ width: 70, height: 50 }}
-            />
+      <View style={{
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 10,
+        marginTop: 15,
+        marginBottom: 20
+      }}>
+          <OpenCameraScan 
+            onPress={handleOpenCamera} 
+            style={shadowStyle.shadow}
+          >
+              <View style={{
+                height: 2,
+                width: '100%',
+                backgroundColor: 'red',
+                position: 'absolute',
+              }} />
+              <Image 
+                source={require('../../../assets/iconBarCode.png')}
+                style={{ width: 70, height: 50, tintColor: '#003F77' }}
+              />
+            
           </OpenCameraScan>
 
-          <InputTextBarCode 
+          <InputTextBarCode
+            style={shadowStyle.shadow}
             placeholder="Código de barras"
             placeholderTextColor="#000000"
             keyboardType="numeric"
             value={product.code}
             onChangeText={(text) => handleChange("code", text)}
           />
-      </ContainerViewNumbers>    
+      </View>    
       
 
       
 
       <View style={{ marginTop: 25, marginBottom: 25, alignItems: "center", justifyContent: "center" }}>
-      <ContainerImageProduct onPress={handleTakePhoto}>
-        {product.image ? (
-          <Image
-            source={{ uri: product.image }}
-            style={{ width: 150, height: 150, borderRadius: 8 }}
-          />
-        ) : (
-          <Image
-            source={require('../../../assets/addImageProduct.png')}
-            style={{ width: 150, height: 150 }}
-          />
-        )}
+      <ContainerImageProduct style={shadowStyle.shadow} onPress={handleTakePhoto}>
+        <BorderFromImage>
+          {product.image ? (
+            <Image
+              source={{ uri: product.image }}
+              style={{ width: '100%', height: '100%', borderRadius: 8 }}
+            />
+          ) : (
+            <>
+              <Image
+                source={require('../../../assets/addImageProduct.png')}
+                style={{ width: 50, height: 50, tintColor: '#003F77' }}
+              />
+              <Text style={{fontSize: 18, color: '#616161'}}>Toque para adicionar imagem</Text>
+            </>
+          )}
+        </BorderFromImage>
+        
       </ContainerImageProduct>
     </View>
 
-      <ButtonSave onPress={handleSave}>
+      <ButtonSave style={shadowStyle.shadow} onPress={handleSave}>
         <LabelTextButton>Cadastrar</LabelTextButton>
       </ButtonSave>
 
@@ -251,13 +281,3 @@ export function ProductForm() {
     </ScrollView>
   );
 }
-
-/*
-  Collor palete
-  .color1 { #bab491 };
-  .color2 { #95906c };
-  .color3 { #706b48 };
-  .color4 { #4a4724 };
-  .color5 { #252200 };
-
-*/

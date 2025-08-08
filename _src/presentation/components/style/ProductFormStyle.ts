@@ -5,18 +5,18 @@ export const InputText = styled.TextInput `
     color: #000000;
     height: 80px;
     font-size: 25px;
-    border: none;
-    border-radius: 10px;
+    border-radius: 30px;
     margin-bottom: 12px;
+    text-align: center;
 `;
 
 export const ContainerViewNumbers = styled.View `
     display: flex;
     flex-direction: row;
     gap: 16px;
-    padding: 13px 0px 13px 0px;
+    padding: 13px 0px;
     align-items: center;
-    //background-color: red;
+    justify-content: center;
 `;
 
 export const InputTextValue = styled.TextInput `
@@ -25,9 +25,7 @@ export const InputTextValue = styled.TextInput `
     height: 80px;
     width: 200px;
     font-size: 25px;
-    border: none;
-    border-radius: 10px;
-    //margin-top: 15px;
+    border-radius: 30px;
 `;
 
 export const InputTextBarCode = styled.TextInput `
@@ -36,9 +34,8 @@ export const InputTextBarCode = styled.TextInput `
     height: 80px;
     width: 290px;
     font-size: 25px;
-    border: none;
-    border-radius: 10px;
-    //margin-top: 15px;
+    border-radius: 30px;
+    text-align: center;
 `;
 
 export const CircleQtdControll = styled.TouchableOpacity `
@@ -79,17 +76,32 @@ export const LabelTextButton = styled.Text`
 `;
 
 export const OpenCameraScan = styled.TouchableOpacity`
+    background-color: #FFFFFF;
+    padding: 10px;
+    border-radius: 10px;
+    height: 80px;
+    justify-content: center;
     align-items: center;
-    margin-top: 25px;
-    margin-bottom: 45px;
 `;
 
 export const ContainerImageProduct = styled.TouchableOpacity`
     
     background-color: #FFFFFF;
     border-radius: 10px;
-    height: 283px;
-    width: 209px;
+    height: 303px;
+    width: 359px;
+    justify-content: center;
+    align-items: center;
+`;
+
+export const BorderFromImage = styled.TouchableOpacity`    
+    background-color: #FFFFFF;
+    border-style: dashed;
+    border-width: 2px;
+    border-color: #8D8F92;
+    border-radius: 10px;
+    height: 260px;
+    width: 320px;
     justify-content: center;
     align-items: center;
 `;
@@ -99,7 +111,6 @@ export const ButtonSave = styled.TouchableOpacity`
     justify-content: center;
     align-items: center;
     height: 80px;
-    border: none;
-    border-radius: 10px;
+    border-radius: 30px;
     margin-bottom: 12px;
 `;
