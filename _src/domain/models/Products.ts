@@ -1,7 +1,7 @@
 export interface Product {
     id?: string;
     name: string;
-    code: number;
+    code: string;
     description: string | null;
     qtd: number;
     value: number;

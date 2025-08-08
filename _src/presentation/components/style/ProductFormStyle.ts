@@ -1,8 +1,8 @@
 import styled from "styled-components/native";
 
 export const InputText = styled.TextInput `
-    background-color: #706B48;
-    color: #FFFFFF;
+    background-color: #FFFFFF;
+    color: #000000;
     height: 80px;
     font-size: 25px;
     border: none;
@@ -20,10 +20,21 @@ export const ContainerViewNumbers = styled.View `
 `;
 
 export const InputTextValue = styled.TextInput `
-    background-color: #706B48;
-    color: #FFFFFF;
+    background-color: #FFFFFF;
+    color: #000000;
     height: 80px;
     width: 200px;
+    font-size: 25px;
+    border: none;
+    border-radius: 10px;
+    //margin-top: 15px;
+`;
+
+export const InputTextBarCode = styled.TextInput `
+    background-color: #FFFFFF;
+    color: #000000;
+    height: 80px;
+    width: 290px;
     font-size: 25px;
     border: none;
     border-radius: 10px;
@@ -40,9 +51,9 @@ export const CircleQtdControll = styled.TouchableOpacity `
 `;
 
 export const CircleTextQtdControll = styled.Text`
-    font-size: 25px;
+    font-size: 40px;
     font-weight: bold;
-    color: #252200;
+    color: #3B82F6;
 `;
 
 export const TextQtdControll = styled.Text`
@@ -50,10 +61,17 @@ export const TextQtdControll = styled.Text`
     min-width: 30px;
     text-align: center;
     margin-inline: 10px;
-    color: #252200;
+    color: #000000;
 `;
 
 export const LabelText = styled.Text`
+    font-size: 25px;
+    margin-bottom: 10px;
+    color: #2D2D2D;
+    font-weight: bold;
+`;
+
+export const LabelTextButton = styled.Text`
     font-size: 25px;
     margin-bottom: 10px;
     color: #FFFFFF;
@@ -77,7 +95,7 @@ export const ContainerImageProduct = styled.TouchableOpacity`
 `;
 
 export const ButtonSave = styled.TouchableOpacity`
-    background-color: #4A4724;
+    background-color: #2563EB   ;
     justify-content: center;
     align-items: center;
     height: 80px;

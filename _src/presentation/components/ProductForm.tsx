@@ -6,7 +6,7 @@ import React, { useRef, useState } from "react";
 import { Alert, Button, Image, Modal, ScrollView, View } from "react-native";
 import { useProducts } from "../hooks/useProducts";
 import { Container } from "../screens/style/container";
-import { ButtonSave, CircleQtdControll, CircleTextQtdControll, ContainerImageProduct, ContainerViewNumbers, InputText, InputTextValue, LabelText, OpenCameraScan, TextQtdControll } from "./style/ProductFormStyle";
+import { ButtonSave, CircleQtdControll, CircleTextQtdControll, ContainerImageProduct, ContainerViewNumbers, InputText, InputTextBarCode, InputTextValue, LabelText, LabelTextButton, OpenCameraScan, TextQtdControll } from "./style/ProductFormStyle";
 
 
 export function ProductForm() {  
@@ -17,7 +17,7 @@ export function ProductForm() {
   const barCodeLock = useRef(false);
   const [product, setProduct] = useState({
     name: '', 
-    code: 0, 
+    code: '', 
     description: '', 
     qtd: 1,
     value: '', 
@@ -53,7 +53,6 @@ export function ProductForm() {
     try{
       await handleCreateProduct({
         ...product,
-        code: Number(product.code),
         qtd: Number(product.qtd),
         value: Number(product.value),
         image: product.image
@@ -63,7 +62,7 @@ export function ProductForm() {
 
       setProduct({
         name: "",
-        code: 0,
+        code: '',
         description: "",
         qtd: 0,
         value: "",
@@ -94,9 +93,9 @@ export function ProductForm() {
     setModalIsVisible(false);
     setProduct({
       ...product,
-      code: Number(data)
+      code: data
     });
-    Alert.alert("Código", data);   
+    Alert.alert("Código", data);  
   }
 
   const handleTakePhoto = async () => {
@@ -135,14 +134,14 @@ export function ProductForm() {
       <Container>
       <InputText
         placeholder="Nome"
-        placeholderTextColor="#FFFFFF"
+        placeholderTextColor="#000000"
         value={product.name}
         onChangeText={(text) => handleChange("name", text)}
       />
       
       <InputText
         placeholder="Descrição (opcional)"
-        placeholderTextColor="#FFFFFF"
+        placeholderTextColor="#000000"
         value={product.description}
         onChangeText={(text) => handleChange("description", text)}
       />
@@ -164,7 +163,7 @@ export function ProductForm() {
       <ContainerViewNumbers>
         <LabelText>Valor R$:</LabelText>
         <InputTextValue
-          placeholderTextColor="#FFFFFF"
+          placeholderTextColor="#000000"
           keyboardType="numeric"
           value={formatToCurrencyInput(product.value).display}
           onChangeText={(text) => {
@@ -174,17 +173,25 @@ export function ProductForm() {
         />
       </ContainerViewNumbers>
 
-      <OpenCameraScan onPress={handleOpenCamera}>
-        <LabelText>Clique aqui para ler o código: </LabelText>
-        <Image source={require('../../../assets/Scanner.png')}/>
-      </OpenCameraScan>
+      <ContainerViewNumbers>
+          <OpenCameraScan onPress={handleOpenCamera}>
+            <Image 
+              source={require('../../../assets/iconBarCode.png')}
+               style={{ width: 70, height: 50 }}
+            />
+          </OpenCameraScan>
 
-      <InputText 
-        placeholder="Código de barras"
-        placeholderTextColor="#FFFFFF"
-        keyboardType="numeric"
-        value={String(product.code)}
-      />
+          <InputTextBarCode 
+            placeholder="Código de barras"
+            placeholderTextColor="#000000"
+            keyboardType="numeric"
+            value={product.code}
+            onChangeText={(text) => handleChange("code", text)}
+          />
+      </ContainerViewNumbers>    
+      
+
+      
 
       <View style={{ marginTop: 25, marginBottom: 25, alignItems: "center", justifyContent: "center" }}>
       <ContainerImageProduct onPress={handleTakePhoto}>
@@ -203,7 +210,7 @@ export function ProductForm() {
     </View>
 
       <ButtonSave onPress={handleSave}>
-        <LabelText>Cadastrar</LabelText>
+        <LabelTextButton>Cadastrar</LabelTextButton>
       </ButtonSave>
 
       <Modal visible={modalIsVisible}>
@@ -230,7 +237,7 @@ export function ProductForm() {
             <View style={{
               width: 250,
               height: 150,
-              borderColor: 'white',
+              borderColor: 'black',
               borderWidth: 2,
               borderRadius: 8,
               backgroundColor: 'rgba(0, 0, 0, 0.2)',

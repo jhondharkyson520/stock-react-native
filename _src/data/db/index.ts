@@ -21,7 +21,7 @@ export async function runMigrations(): Promise<void> {
     `CREATE TABLE IF NOT EXISTS products (
        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
        name TEXT NOT NULL,
-       code INTEGER NOT NULL,
+       code TEXT NOT NULL,
        description TEXT,
        value REAL NOT NULL,
        qtd INTEGER NOT NULL DEFAULT 0,
