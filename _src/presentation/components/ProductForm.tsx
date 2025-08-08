@@ -17,7 +17,7 @@ export function ProductForm() {
   const barCodeLock = useRef(false);
   const [product, setProduct] = useState({
     name: '', 
-    code: '', 
+    code: 0, 
     description: '', 
     qtd: 1,
     value: '', 
@@ -53,14 +53,17 @@ export function ProductForm() {
     try{
       await handleCreateProduct({
         ...product,
+        code: Number(product.code),
         qtd: Number(product.qtd),
         value: Number(product.value),
         image: product.image
       });
 
+      Alert.alert(" Salvo", "Produto salvo com sucesso");
+
       setProduct({
         name: "",
-        code: "",
+        code: 0,
         description: "",
         qtd: 0,
         value: "",
@@ -68,7 +71,7 @@ export function ProductForm() {
       });
     } catch(err) {
       console.error(err);
-      alert('Erro ao salvar produto');
+      Alert.alert("Erro", "Não foi possível salvar o produto");
     } finally {
       setLoading(false);
     }
@@ -89,6 +92,10 @@ export function ProductForm() {
 
   const handleBarCodeRead = (data: string) => {
     setModalIsVisible(false);
+    setProduct({
+      ...product,
+      code: Number(data)
+    });
     Alert.alert("Código", data);   
   }
 
@@ -176,6 +183,7 @@ export function ProductForm() {
         placeholder="Código de barras"
         placeholderTextColor="#FFFFFF"
         keyboardType="numeric"
+        value={String(product.code)}
       />
 
       <View style={{ marginTop: 25, marginBottom: 25, alignItems: "center", justifyContent: "center" }}>

@@ -13,7 +13,6 @@ export async function runMigrations(): Promise<void> {
   const database = await getDB();
   const statements = [
     `PRAGMA journal_mode = WAL;`,
-    `DROP TABLE products`,
     `CREATE TABLE IF NOT EXISTS users (
        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
        name TEXT NOT NULL,
@@ -22,7 +21,7 @@ export async function runMigrations(): Promise<void> {
     `CREATE TABLE IF NOT EXISTS products (
        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
        name TEXT NOT NULL,
-       code TEXT NOT NULL,
+       code INTEGER NOT NULL,
        description TEXT,
        value REAL NOT NULL,
        qtd INTEGER NOT NULL DEFAULT 0,
