@@ -38,7 +38,7 @@ export class SQLiteProductRepository implements IProductRepository {
         return result;
     }
     async updateProduct(product: Product): Promise<void> {
-        await db.runAsync(`UPDATE product SET name = ?, code = ?, description = ?, qtd = ?, value = ?, image = ? WHERE id = ?`,
+        await db.runAsync(`UPDATE products SET name = ?, code = ?, description = ?, qtd = ?, value = ?, image = ? WHERE id = ?`,
             [
                 product.name, 
                 product.code, 

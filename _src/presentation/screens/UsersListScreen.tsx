@@ -14,7 +14,7 @@ export function UsersListScreen() {
   useEffect(() => {
     const initializeDb = async () => {
       try {
-        await runMigrations(); // Executa as migrações no startup
+        await runMigrations();
         setDbReady(true);
       } catch (e) {
         console.error("Failed to initialize database:", e);

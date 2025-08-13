@@ -75,15 +75,6 @@ export function ProductEdit() {
       });
 
       Alert.alert("Atualizado", "Produto atualizado com sucesso");
-
-      setProduct({
-        name: "",
-        code: '',
-        description: "",
-        qtd: 0,
-        value: "",
-        image: ""
-      });
       navigation.navigate("Home");
     } catch(err) {
       console.error(err);

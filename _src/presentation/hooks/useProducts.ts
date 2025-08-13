@@ -3,7 +3,7 @@ import { Product } from "@/_src/domain/models/Products";
 import { CreateProduct } from "@/_src/domain/usecases/product/CreateProduct";
 import { DeleteProducts } from "@/_src/domain/usecases/product/DeleteProduct";
 import { GetProductById } from "@/_src/domain/usecases/product/GetProductById";
-import { GetProducts } from "@/_src/domain/usecases/product/getProducts";
+import { GetProducts } from "@/_src/domain/usecases/product/GetProducts";
 import { UpdateProduct } from "@/_src/domain/usecases/product/UpdateProduct";
 import { useCallback, useState } from "react";
 
