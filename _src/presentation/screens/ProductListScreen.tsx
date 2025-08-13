@@ -13,19 +13,16 @@ export function ProductsListScreen() {
   useEffect(() => {
     const initializeDb = async () => {
       try {
-        await runMigrations(); // Executa as migrações no startup
+        await runMigrations();
         setDbReady(true);
+         if (dbReady) {
+          handleGetProducts();
+        }
       } catch (e) {
         console.error("Failed to initialize database:", e);
       }
     };
     initializeDb();
-  }, []);
-
-  useEffect(() => {
-    if (dbReady) {
-      handleGetProducts();
-    }
   }, [dbReady]);
 
   return (

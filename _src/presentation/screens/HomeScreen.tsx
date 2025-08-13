@@ -16,7 +16,7 @@ export default function HomeScreen() {
   return (
     <Container>
       <Image source={require('../../../assets/LogoPinguim.png')}/>
-      <TouchableOpacity onPress={() => navigation.navigate("ProductScreen")}>
+      <TouchableOpacity onPress={() => navigation.navigate("ProductCreateScreen")}>
         <Text>New Products</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate("ProductsListScreen")}>

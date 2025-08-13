@@ -8,10 +8,10 @@ let db:SQLiteDatabase;
     db = await getDB();
 })();
 
-export class SQLiteProductRepository implements IProductRepository {    
+export class SQLiteProductRepository implements IProductRepository {  
     async createProduct(product: Omit<Product, "id">): Promise<Product> {        
         const result = await db.runAsync(
-            "INSERT INTO products (name, code, description, qtd, value, image) VALUES (?, ?, ?, ?, ?, ?)",
+            `INSERT INTO products (name, code, description, qtd, value, image) VALUES (?, ?, ?, ?, ?, ?)`,
             [
                 product.name, 
                 product.code, 
@@ -34,12 +34,22 @@ export class SQLiteProductRepository implements IProductRepository {
        return result
     }
     async getByIdProduct(id: string): Promise<Product | null> {
-        throw new Error("Method not implemented.");
+        const result = await db.getFirstAsync<Product>('SELECT * FROM products WHERE id=?', [id]);
+        return result;
     }
     async updateProduct(product: Product): Promise<void> {
-        throw new Error("Method not implemented.");
+        await db.runAsync(`UPDATE product SET name = ?, code = ?, description = ?, qtd = ?, value = ?, image = ? WHERE id = ?`,
+            [
+                product.name, 
+                product.code, 
+                product.description,
+                Number(product.qtd), 
+                Number(product.value), 
+                product.image
+            ]
+        );
     }
-    async deleteUser(id: string): Promise<void> {
-        throw new Error("Method not implemented.");
+    async deleteProduct(id: string): Promise<void> {
+        await db.runAsync("DELETE FROM products WHERE id=?", [id]);
     }
 }

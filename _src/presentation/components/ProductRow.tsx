@@ -1,14 +1,36 @@
 import { Product } from "@/_src/domain/models/Products";
+import { RootStackParamList } from "@/App";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Alert, Image, StyleSheet, Text, View } from "react-native";
+import { useProducts } from "../hooks/useProducts";
 import { shadowStyle } from "../screens/style/shadowStyle";
-import { ContainerImageProduct } from "./style/ProductFormStyle";
+import { ButtonLarge, ContainerImageProduct, LabelTextButton } from "./style/ProductFormStyle";
 
 interface ProductRowProps {
   product: Product;
 }
 
+type ProductRowScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "ProductsListScreen"
+>;
+
+
 export function ProductRow({product}: ProductRowProps) {
+  const {products, error, handleDeleteProduct} = useProducts();
+  const navigation = useNavigation<ProductRowScreenNavigationProp>();
+  const deleteProduct = async (id: string) => {
+    console.log('Tentando deletar produto:', id);
+    try {
+      await handleDeleteProduct(id);
+      Alert.alert('Product deleted success');
+    } catch (err) {
+      Alert.alert('Error delete product');
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.info}>
@@ -23,7 +45,21 @@ export function ProductRow({product}: ProductRowProps) {
             <Image source={{ uri: product.image }} style={{ width: '100%', height: '100%', borderRadius: 8 }} />                           
           </ContainerImageProduct>
         </View>
-        
+        <ButtonLarge 
+          style={shadowStyle.shadow} 
+          onPress={() => {
+            if (!product.id) {
+              Alert.alert("Produto inválido");
+              return;
+            }
+            navigation.navigate("ProductEditScreen", { productId: product.id });
+          }}
+        >
+          <LabelTextButton>Editar</LabelTextButton>
+        </ButtonLarge>
+        <ButtonLarge style={shadowStyle.shadow} onPress={() => product.id && deleteProduct(product.id)}>
+          <LabelTextButton>Deletar</LabelTextButton>
+        </ButtonLarge>       
       </View>
     </View>
   );

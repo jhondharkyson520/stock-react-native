@@ -1,21 +1,36 @@
 import { formatToCurrencyInput } from "@/_src/utils/maskValue";
+import { RootStackParamList } from "@/App";
+import { useRoute } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
-import React, { useRef, useState } from "react";
+import { useNavigation } from "expo-router";
+import React, { useEffect, useRef, useState } from "react";
 import { Alert, Button, Image, Modal, ScrollView, Text, View } from "react-native";
 import { useProducts } from "../hooks/useProducts";
 import { Container } from "../screens/style/container";
 import { shadowStyle } from "../screens/style/shadowStyle";
 import { BorderFromImage, ButtonLarge, CircleQtdControll, CircleTextQtdControll, ContainerImageProduct, ContainerViewNumbers, InputText, InputTextBarCode, InputTextValue, LabelText, LabelTextButton, OpenCameraScan, TextQtdControll } from "./style/ProductFormStyle";
 
+type ProductEditScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "ProductEditScreen"
+>;
 
-export function ProductForm() {  
+type RouteParams = {
+  productId: string;
+};
+
+export function ProductEdit() {  
   const [loading, setLoading] = useState(false);
-  const {products, error, handleCreateProduct} = useProducts();
+  const {products, error, handleEditProduct, productById} = useProducts();
   const [modalIsVisible, setModalIsVisible] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
   const barCodeLock = useRef(false);
+  const navigation = useNavigation<ProductEditScreenNavigationProp>();
+  const route = useRoute();
+  const { productId } = route.params as RouteParams;
   const [product, setProduct] = useState({
     name: '', 
     code: '', 
@@ -45,21 +60,21 @@ export function ProductForm() {
     setProduct(prev => ({...prev, [key]: value}));
   };
 
-  const handleSave = async () => {
+  const handleEdit = async () => {
     if(!product.name || !product.code) {
       alert('Name or code invalid');
       return;
     }
     setLoading(true);
     try{
-      await handleCreateProduct({
+      await handleEditProduct({
         ...product,
         qtd: Number(product.qtd),
         value: Number(product.value),
         image: product.image
       });
 
-      Alert.alert(" Salvo", "Produto salvo com sucesso");
+      Alert.alert("Atualizado", "Produto atualizado com sucesso");
 
       setProduct({
         name: "",
@@ -69,6 +84,7 @@ export function ProductForm() {
         value: "",
         image: ""
       });
+      navigation.navigate("Home");
     } catch(err) {
       console.error(err);
       Alert.alert("Erro", "Não foi possível salvar o produto");
@@ -128,6 +144,28 @@ export function ProductForm() {
     Alert.alert("Erro", "Não foi possível tirar a foto.");
   }
 };
+
+useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const foundProduct = await productById(productId);
+        if (foundProduct) {
+          setProduct({
+            name: foundProduct.name,
+            code: foundProduct.code,
+            description: foundProduct.description || "",
+            qtd: foundProduct.qtd,
+            value: foundProduct.value.toString(),
+            image: foundProduct.image || "",
+          });
+        }
+      } catch (err) {
+        console.error("Erro ao buscar produto:", err);
+      }
+    };
+
+    fetchProduct();
+  }, [productId]);
 
   
   return (
@@ -239,8 +277,8 @@ export function ProductForm() {
       </ContainerImageProduct>
     </View>
 
-      <ButtonLarge style={shadowStyle.shadow} onPress={handleSave}>
-        <LabelTextButton>Cadastrar</LabelTextButton>
+      <ButtonLarge style={shadowStyle.shadow} onPress={handleEdit}>
+        <LabelTextButton>Atualizar</LabelTextButton>
       </ButtonLarge>
 
       <Modal visible={modalIsVisible}>

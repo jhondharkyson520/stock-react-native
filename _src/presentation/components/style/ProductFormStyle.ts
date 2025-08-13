@@ -106,7 +106,7 @@ export const BorderFromImage = styled.TouchableOpacity`
     align-items: center;
 `;
 
-export const ButtonSave = styled.TouchableOpacity`
+export const ButtonLarge = styled.TouchableOpacity`
     background-color: #2563EB   ;
     justify-content: center;
     align-items: center;

@@ -4,7 +4,7 @@ import { ProductForm } from "../components/ProductForm";
 import { useProducts } from "../hooks/useProducts";
 import { Container } from "./style/container";
 
-export function ProductScreen() {
+export function ProductCreateScreen() {
   const {products, loading, error, handleCreateProduct} = useProducts();
   const [dbReady, setDbReady] = useState(false);
 
