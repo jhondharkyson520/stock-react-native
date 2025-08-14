@@ -28,6 +28,8 @@ export function ProductRow({product}: ProductRowProps) {
       Alert.alert('Product deleted success');
     } catch (err) {
       Alert.alert('Error delete product');
+    } finally {
+      navigation.navigate("Home");      
     }
   };
 

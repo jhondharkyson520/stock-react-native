@@ -38,6 +38,10 @@ export class SQLiteProductRepository implements IProductRepository {
         return result;
     }
     async updateProduct(product: Product): Promise<void> {
+        if(!product.id) {
+            throw new Error("Product ID is required for update.");
+        }
+        
         await db.runAsync(`UPDATE products SET name = ?, code = ?, description = ?, qtd = ?, value = ?, image = ? WHERE id = ?`,
             [
                 product.name, 
@@ -45,7 +49,8 @@ export class SQLiteProductRepository implements IProductRepository {
                 product.description,
                 Number(product.qtd), 
                 Number(product.value), 
-                product.image
+                product.image,
+                product.id
             ]
         );
     }

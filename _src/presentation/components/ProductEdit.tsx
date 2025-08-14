@@ -32,6 +32,7 @@ export function ProductEdit() {
   const route = useRoute();
   const { productId } = route.params as RouteParams;
   const [product, setProduct] = useState({
+    id: '',
     name: '', 
     code: '', 
     description: '', 
@@ -69,18 +70,18 @@ export function ProductEdit() {
     try{
       await handleEditProduct({
         ...product,
+        id: product.id,
         qtd: Number(product.qtd),
         value: Number(product.value),
         image: product.image
       });
-
-      Alert.alert("Atualizado", "Produto atualizado com sucesso");
-      navigation.navigate("Home");
+      Alert.alert("Atualizado", "Produto atualizado com sucesso");      
     } catch(err) {
       console.error(err);
       Alert.alert("Erro", "Não foi possível salvar o produto");
     } finally {
       setLoading(false);
+      navigation.navigate("Home");      
     }
   }
 
@@ -142,6 +143,7 @@ useEffect(() => {
         const foundProduct = await productById(productId);
         if (foundProduct) {
           setProduct({
+            id: foundProduct.id,
             name: foundProduct.name,
             code: foundProduct.code,
             description: foundProduct.description || "",
