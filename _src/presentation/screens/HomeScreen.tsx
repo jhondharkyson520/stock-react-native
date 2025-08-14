@@ -22,14 +22,12 @@ export default function HomeScreen() {
       <TouchableOpacity onPress={() => navigation.navigate("ProductsListScreen")}>
         <Text>Products List</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate("UsersListScreen")}>
-        <Text>Users</Text>
+      <TouchableOpacity onPress={() => navigation.navigate("ProductsListScreen")}>
+        <Text>Entrada de produtos</Text>
       </TouchableOpacity>
-    
-    
-
-      <Text>Documentos - href = documentScreen</Text>
-      <Text>Relatórios - href = relatoriosScreen</Text>
+      <TouchableOpacity onPress={() => navigation.navigate("ProductsListScreen")}>
+        <Text>Saída de produtos</Text>
+      </TouchableOpacity>
     </Container>
   );
 }

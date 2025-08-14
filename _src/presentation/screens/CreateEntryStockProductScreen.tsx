@@ -1,12 +1,11 @@
 import { runMigrations } from "@/_src/data/db";
 import React, { useEffect, useState } from "react";
 import { Text } from "react-native";
-import { ProductForm } from "../components/ProductForm";
-import { useProducts } from "../hooks/useProducts";
+import { useStockMovement } from "../hooks/useStockMovement";
 import { Container } from "./style/container";
 
-export function ProductCreateScreen() {
-  const {loading, error, handleCreateProduct} = useProducts();
+export function CreateEntryStockProductScreen() {
+  const {loading, error, handleCreateStock} = useStockMovement();
   const [dbReady, setDbReady] = useState(false);
   const [dbError, setDbError] = useState<string | null>(null);
 
@@ -28,7 +27,7 @@ export function ProductCreateScreen() {
 
   return (
     <Container>
-        <ProductForm onCreate={handleCreateProduct} loading={loading}/> 
+        <>StockForm</>
     </Container>
   );
 }

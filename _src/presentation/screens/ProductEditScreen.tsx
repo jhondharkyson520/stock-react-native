@@ -1,28 +1,33 @@
-import { runMigrations } from "@/_src/data/db";
+import { Product } from "@/_src/domain/models/Products";
+import { useRoute } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
+import { Text } from "react-native";
 import { ProductEdit } from "../components/ProductEdit";
 import { useProducts } from "../hooks/useProducts";
 import { Container } from "./style/container";
 
 export function ProductEditScreen() {
-  const {products, loading, error, handleCreateProduct} = useProducts();
-  const [dbReady, setDbReady] = useState(false);
+  const {handleEditProduct, productById} = useProducts();
+  const route = useRoute();
+  const {productId} = route.params as {productId: string};
+  const [product, setProduct] = useState<Product | null>(null);
 
   useEffect(() => {
-    const initializeDb = async () => {
-      try {
-        await runMigrations();
-        setDbReady(true);
-      } catch (e) {
-        console.error("Failed to initialize database:", e);
-      }
+    const fetchProduct = async () => {
+      const foundProduct = await productById(productId);
+      if(foundProduct) setProduct(foundProduct);
     };
-    initializeDb();
-  }, []);
+    fetchProduct();
+  }, [productId]);
+
+  if(!product) return <Text>Carregando</Text>;
 
   return (
     <Container>
-        <ProductEdit/> 
+        <ProductEdit
+          product={product}
+          onEdit={handleEditProduct}
+        /> 
     </Container>
   );
 }

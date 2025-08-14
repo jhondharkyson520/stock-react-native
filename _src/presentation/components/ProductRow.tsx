@@ -4,12 +4,12 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React from "react";
 import { Alert, Image, StyleSheet, Text, View } from "react-native";
-import { useProducts } from "../hooks/useProducts";
 import { shadowStyle } from "../screens/style/shadowStyle";
 import { ButtonLarge, ContainerImageProduct, LabelTextButton } from "./style/ProductFormStyle";
 
 interface ProductRowProps {
   product: Product;
+  onDelete: (id: string) => void;
 }
 
 type ProductRowScreenNavigationProp = NativeStackNavigationProp<
@@ -18,18 +18,16 @@ type ProductRowScreenNavigationProp = NativeStackNavigationProp<
 >;
 
 
-export function ProductRow({product}: ProductRowProps) {
-  const {products, error, handleDeleteProduct} = useProducts();
+export function ProductRow({product, onDelete}: ProductRowProps) {
   const navigation = useNavigation<ProductRowScreenNavigationProp>();
-  const deleteProduct = async (id: string) => {
-    console.log('Tentando deletar produto:', id);
+
+  const deleteProduct = async () => {
+    if(!product.id) return;
     try {
-      await handleDeleteProduct(id);
+      await onDelete(product.id);
       Alert.alert('Product deleted success');
     } catch (err) {
       Alert.alert('Error delete product');
-    } finally {
-      navigation.navigate("Home");      
     }
   };
 
@@ -44,7 +42,7 @@ export function ProductRow({product}: ProductRowProps) {
         <Text style={styles.name}>Quantidade: {product.qtd}</Text>
         <View style={{ marginTop: 25, marginBottom: 25, alignItems: "center", justifyContent: "center" }}>
           <ContainerImageProduct style={shadowStyle.shadow}>
-            <Image source={{ uri: product.image }} style={{ width: '100%', height: '100%', borderRadius: 8 }} />                           
+            {product.image == 'blank' ? <></> : <Image source={{ uri: product.image }} style={{ width: '100%', height: '100%', borderRadius: 8 }} />}                          
           </ContainerImageProduct>
         </View>
         <ButtonLarge 
@@ -59,7 +57,7 @@ export function ProductRow({product}: ProductRowProps) {
         >
           <LabelTextButton>Editar</LabelTextButton>
         </ButtonLarge>
-        <ButtonLarge style={shadowStyle.shadow} onPress={() => product.id && deleteProduct(product.id)}>
+        <ButtonLarge style={shadowStyle.shadow} onPress={deleteProduct}>
           <LabelTextButton>Deletar</LabelTextButton>
         </ButtonLarge>       
       </View>

@@ -1,81 +1,64 @@
+import { Product } from "@/_src/domain/models/Products";
 import { formatToCurrencyInput } from "@/_src/utils/maskValue";
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useRef, useState } from "react";
 import { Alert, Button, Image, Modal, ScrollView, Text, View } from "react-native";
-import { useProducts } from "../hooks/useProducts";
 import { Container } from "../screens/style/container";
 import { shadowStyle } from "../screens/style/shadowStyle";
-import { BorderFromImage, ButtonLarge, CircleQtdControll, CircleTextQtdControll, ContainerImageProduct, ContainerViewNumbers, InputText, InputTextBarCode, InputTextValue, LabelText, LabelTextButton, OpenCameraScan, TextQtdControll } from "./style/ProductFormStyle";
+import { BorderFromImage, ButtonLarge, ContainerImageProduct, ContainerViewNumbers, InputText, InputTextBarCode, InputTextValue, LabelText, LabelTextButton, OpenCameraScan } from "./style/ProductFormStyle";
 
+interface ProductFormProps {
+  onCreate: (product: Product) => Promise<void>;
+  loading: boolean;
+}
 
-export function ProductForm() {  
-  const [loading, setLoading] = useState(false);
-  const {products, error, handleCreateProduct} = useProducts();
-  const [modalIsVisible, setModalIsVisible] = useState(false);
-  const [permission, requestPermission] = useCameraPermissions();
-  const barCodeLock = useRef(false);
-  const [product, setProduct] = useState({
+export function ProductForm({onCreate, loading}: ProductFormProps) {
+  const [formData, setFormData] = useState({
     name: '', 
     code: '', 
     description: '', 
-    qtd: 1,
+    qtd: 0,
     value: '', 
     image: ''
   });
+  const [modalIsVisible, setModalIsVisible] = useState(false);
+  const [permission, requestPermission] = useCameraPermissions();
+  const barCodeLock = useRef(false);
 
-  const handleDecrease = () => {
-    if(product.qtd > 0) {
-      setProduct(prev => ({
-        ...prev,
-        qtd: prev.qtd - 1
-      }));
-    }
-  };
-
-  const handleIncrease = () => {
-    setProduct(prev => ({
-      ...prev,
-      qtd: prev.qtd + 1
-    }));
-  };
-
-  const handleChange = (key: keyof typeof product, value: string) => {
-    setProduct(prev => ({...prev, [key]: value}));
+  const handleChange = (key: keyof typeof formData, value: string | number) => {
+    setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleSave = async () => {
-    if(!product.name || !product.code) {
-      alert('Name or code invalid');
+    if (!formData.name || !formData.code) {
+      Alert.alert("Erro", "Nome e código de barras são obrigatórios");
       return;
     }
-    setLoading(true);
-    try{
-      await handleCreateProduct({
-        ...product,
-        qtd: Number(product.qtd),
-        value: Number(product.value),
-        image: product.image
-      });
-
-      Alert.alert(" Salvo", "Produto salvo com sucesso");
-
-      setProduct({
+    try {
+      const imageToSave = formData.image && formData.image !== "" ? formData.image : "blank";
+      const newProduct: Product = {
+        ...formData,
+        value: Number(formData.value) || 0,
+        qtd: formData.qtd,
+        image: imageToSave,
+      };
+      await onCreate(newProduct);
+      Alert.alert("Sucesso", "Produto salvo com sucesso");
+      setFormData({
         name: "",
-        code: '',
+        code: "",
         description: "",
         qtd: 0,
         value: "",
-        image: ""
+        image: "",
       });
-    } catch(err) {
-      console.error(err);
+    } catch (err) {
+      console.error("Erro ao salvar produto:", err);
       Alert.alert("Erro", "Não foi possível salvar o produto");
-    } finally {
-      setLoading(false);
     }
-  }
+  };
 
   const handleOpenCamera = async () => {
     try {
@@ -92,8 +75,8 @@ export function ProductForm() {
 
   const handleBarCodeRead = (data: string) => {
     setModalIsVisible(false);
-    setProduct({
-      ...product,
+    setFormData({
+      ...formData,
       code: data
     });
     Alert.alert("Código", data);  
@@ -121,7 +104,7 @@ export function ProductForm() {
         to: newPath,
       });
 
-      setProduct(prev => ({ ...prev, image: newPath }));
+      setFormData(prev => ({ ...prev, image: newPath }));
     }
   } catch (err) {
     console.log("Erro ao tirar foto:", err);
@@ -129,7 +112,6 @@ export function ProductForm() {
   }
 };
 
-  
   return (
     <ScrollView>
       <Container>
@@ -138,7 +120,7 @@ export function ProductForm() {
         style={shadowStyle.shadow}
         placeholder="Nome"
         placeholderTextColor="#000000"
-        value={product.name}
+        value={formData.name}
         onChangeText={(text) => handleChange("name", text)}
       />
       
@@ -146,23 +128,10 @@ export function ProductForm() {
         style={shadowStyle.shadow}
         placeholder="Descrição (opcional)"
         placeholderTextColor="#000000"
-        value={product.description}
+        value={formData.description}
         onChangeText={(text) => handleChange("description", text)}
       />
 
-      
-      <ContainerViewNumbers>
-        <LabelText>Quantidade:</LabelText>
-        <CircleQtdControll style={shadowStyle.shadow} onPress={handleDecrease}>
-          <CircleTextQtdControll>-</CircleTextQtdControll>
-        </CircleQtdControll>
-
-        <TextQtdControll>{product.qtd}</TextQtdControll>
-
-        <CircleQtdControll style={shadowStyle.shadow} onPress={handleIncrease}>
-          <CircleTextQtdControll>+</CircleTextQtdControll>
-        </CircleQtdControll>
-      </ContainerViewNumbers>
 
       <ContainerViewNumbers>
         <LabelText>Valor R$:</LabelText>
@@ -170,7 +139,7 @@ export function ProductForm() {
           style={shadowStyle.shadow}
           placeholderTextColor="#000000"
           keyboardType="numeric"
-          value={formatToCurrencyInput(product.value).display}
+          value={formatToCurrencyInput(formData.value).display}
           onChangeText={(text) => {
             const { raw } = formatToCurrencyInput(text);
             handleChange("value", raw);
@@ -209,7 +178,7 @@ export function ProductForm() {
             placeholder="Código de barras"
             placeholderTextColor="#000000"
             keyboardType="numeric"
-            value={product.code}
+            value={formData.code}
             onChangeText={(text) => handleChange("code", text)}
           />
       </View>    
@@ -220,9 +189,9 @@ export function ProductForm() {
       <View style={{ marginTop: 25, marginBottom: 25, alignItems: "center", justifyContent: "center" }}>
       <ContainerImageProduct style={shadowStyle.shadow}>
         <BorderFromImage onPress={handleTakePhoto}>
-          {product.image ? (
+          {formData.image ? (
             <Image
-              source={{ uri: product.image }}
+              source={{ uri: formData.image }}
               style={{ width: '100%', height: '100%', borderRadius: 8 }}
             />
           ) : (

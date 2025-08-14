@@ -46,7 +46,7 @@ export const useProducts = () => {
     const handleDeleteProduct = async (id: string) => {
       try {
         await deleteProductUseCase.execute(id);
-        await handleGetProducts();
+        setProducts(prev => prev.filter(product => product.id !== id)); 
       } catch (err) {
         console.error(err);
         setError("Failed to delete product");

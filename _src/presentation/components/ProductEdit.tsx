@@ -1,6 +1,6 @@
+import { Product } from "@/_src/domain/models/Products";
 import { formatToCurrencyInput } from "@/_src/utils/maskValue";
 import { RootStackParamList } from "@/App";
-import { useRoute } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
@@ -8,158 +8,144 @@ import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import { Alert, Button, Image, Modal, ScrollView, Text, View } from "react-native";
-import { useProducts } from "../hooks/useProducts";
 import { Container } from "../screens/style/container";
 import { shadowStyle } from "../screens/style/shadowStyle";
-import { BorderFromImage, ButtonLarge, CircleQtdControll, CircleTextQtdControll, ContainerImageProduct, ContainerViewNumbers, InputText, InputTextBarCode, InputTextValue, LabelText, LabelTextButton, OpenCameraScan, TextQtdControll } from "./style/ProductFormStyle";
+import {
+  BorderFromImage,
+  ButtonLarge,
+  CircleQtdControll,
+  CircleTextQtdControll,
+  ContainerImageProduct,
+  ContainerViewNumbers,
+  InputText,
+  InputTextBarCode,
+  InputTextValue,
+  LabelText,
+  LabelTextButton,
+  OpenCameraScan,
+  TextQtdControll
+} from "./style/ProductFormStyle";
 
 type ProductEditScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   "ProductEditScreen"
 >;
 
-type RouteParams = {
-  productId: string;
-};
+interface ProductEditProps {
+  product: Product;
+  onEdit: (product: Product) => Promise<void>;
+}
 
-export function ProductEdit() {  
-  const [loading, setLoading] = useState(false);
-  const {products, error, handleEditProduct, productById} = useProducts();
+export function ProductEdit({product, onEdit}: ProductEditProps) {  
+  const [loading, setLoading] = useState(false);  
   const [modalIsVisible, setModalIsVisible] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
   const barCodeLock = useRef(false);
   const navigation = useNavigation<ProductEditScreenNavigationProp>();
-  const route = useRoute();
-  const { productId } = route.params as RouteParams;
-  const [product, setProduct] = useState({
-    id: '',
-    name: '', 
-    code: '', 
-    description: '', 
-    qtd: 1,
-    value: '', 
-    image: ''
-  });
+  const [localProduct, setLocalProduct] = useState(product);
+
+  useEffect(() => {
+    setLocalProduct(product);
+  }, [product]);  
 
   const handleDecrease = () => {
-    if(product.qtd > 0) {
-      setProduct(prev => ({
-        ...prev,
-        qtd: prev.qtd - 1
-      }));
-    }
+    setLocalProduct((prev) => ({
+      ...prev,
+      qtd: Math.max(0, prev.qtd - 1),
+    }));
   };
 
   const handleIncrease = () => {
-    setProduct(prev => ({
+    setLocalProduct(prev => ({
       ...prev,
       qtd: prev.qtd + 1
     }));
   };
 
-  const handleChange = (key: keyof typeof product, value: string) => {
-    setProduct(prev => ({...prev, [key]: value}));
+  const handleChange = (key: keyof Product, value: string | number) => {
+    setLocalProduct(prev => ({...prev, [key]: value}));
   };
 
   const handleEdit = async () => {
-    if(!product.name || !product.code) {
+    if(!localProduct.name || !localProduct.code) {
       alert('Name or code invalid');
       return;
     }
     setLoading(true);
     try{
-      await handleEditProduct({
-        ...product,
-        id: product.id,
-        qtd: Number(product.qtd),
-        value: Number(product.value),
-        image: product.image
-      });
-      Alert.alert("Atualizado", "Produto atualizado com sucesso");      
+      const updatedProduct = {
+        ...localProduct,
+        value: Number(localProduct.value),
+        qtd: Number(localProduct.qtd),
+      };
+
+      await onEdit(updatedProduct);
+
+      Alert.alert("Atualizado", "Produto atualizado com sucesso");
+      
+      navigation.goBack();          
     } catch(err) {
-      console.error(err);
+      //console.error(err);
       Alert.alert("Erro", "Não foi possível salvar o produto");
-    } finally {
-      setLoading(false);
-      navigation.navigate("Home");      
+    } finally {      
+      setLoading(false); 
     }
   }
 
   const handleOpenCamera = async () => {
-    try {
-      const {granted} = await requestPermission();
-      if(!granted) {
-        return Alert.alert("Camera", "Você precisa permitir o uso da camera");
-      }      
-      setModalIsVisible(true)
-      barCodeLock.current = false;
-    } catch (error) {
-      console.log(error);      
-    }
+    const {granted} = await requestPermission();
+    if(!granted) {
+      Alert.alert("Permissão", "Você precisa permitir o uso da câmera");
+      return;
+    }      
+    setModalIsVisible(true)
+    barCodeLock.current = false;
   };
 
   const handleBarCodeRead = (data: string) => {
-    setModalIsVisible(false);
-    setProduct({
-      ...product,
-      code: data
-    });
-    Alert.alert("Código", data);  
-  }
+    if (data && !barCodeLock.current) {
+      barCodeLock.current = true;
+      setLocalProduct((prev) => ({ ...prev, code: data }));
+      setModalIsVisible(false);
+      Alert.alert("Código", `Código lido: ${data}`);
+    }
+  };
 
   const handleTakePhoto = async () => {
-  try {
-    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-    if (!permissionResult.granted) {
-      return Alert.alert("Permissão", "Permissão da câmera é necessária.");
-    }
+    try {
+      const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+      if (!permissionResult.granted) {
+        Alert.alert("Permissão", "Permissão da câmera é necessária");
+        return;
+      }
 
-    const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: false,
-      quality: 0.7,
-    });
-
-    if (!result.canceled && result.assets.length > 0) {
-      const photo = result.assets[0];
-      const fileName = photo.fileName || `product_${Date.now()}.jpg`;
-      const newPath = FileSystem.documentDirectory + fileName;
-
-      await FileSystem.copyAsync({
-        from: photo.uri,
-        to: newPath,
+      const result = await ImagePicker.launchCameraAsync({
+        allowsEditing: false,
+        quality: 0.7,
       });
 
-      setProduct(prev => ({ ...prev, image: newPath }));
-    }
-  } catch (err) {
-    console.log("Erro ao tirar foto:", err);
-    Alert.alert("Erro", "Não foi possível tirar a foto.");
-  }
-};
+      if (!result.canceled && result.assets?.length > 0) {
+        const photo = result.assets[0];
+        const fileName = photo.fileName || `product_${Date.now()}.jpg`;
+        const newPath = `${FileSystem.documentDirectory}${fileName}`;
 
-useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const foundProduct = await productById(productId);
-        if (foundProduct) {
-          setProduct({
-            id: foundProduct.id,
-            name: foundProduct.name,
-            code: foundProduct.code,
-            description: foundProduct.description || "",
-            qtd: foundProduct.qtd,
-            value: foundProduct.value.toString(),
-            image: foundProduct.image || "",
-          });
-        }
-      } catch (err) {
-        console.error("Erro ao buscar produto:", err);
+        await FileSystem.copyAsync({
+          from: photo.uri,
+          to: newPath,
+        });
+
+        setLocalProduct((prev) => ({ ...prev, image: newPath }));
       }
-    };
+    } catch (err) {
+      console.error("Erro ao tirar foto:", err);
+      Alert.alert("Erro", "Não foi possível tirar a foto");
+    }
+  };
 
-    fetchProduct();
-  }, [productId]);
-
+  const safeValue = (value: string | null | number | undefined): string => {
+    if (value === null || value === undefined) return "";
+    return String(value);
+  };
   
   return (
     <ScrollView>
@@ -169,7 +155,7 @@ useEffect(() => {
         style={shadowStyle.shadow}
         placeholder="Nome"
         placeholderTextColor="#000000"
-        value={product.name}
+        value={localProduct.name}
         onChangeText={(text) => handleChange("name", text)}
       />
       
@@ -177,7 +163,7 @@ useEffect(() => {
         style={shadowStyle.shadow}
         placeholder="Descrição (opcional)"
         placeholderTextColor="#000000"
-        value={product.description}
+        value={safeValue(localProduct.description)}
         onChangeText={(text) => handleChange("description", text)}
       />
 
@@ -188,7 +174,7 @@ useEffect(() => {
           <CircleTextQtdControll>-</CircleTextQtdControll>
         </CircleQtdControll>
 
-        <TextQtdControll>{product.qtd}</TextQtdControll>
+        <TextQtdControll>{localProduct.qtd}</TextQtdControll>
 
         <CircleQtdControll style={shadowStyle.shadow} onPress={handleIncrease}>
           <CircleTextQtdControll>+</CircleTextQtdControll>
@@ -201,7 +187,7 @@ useEffect(() => {
           style={shadowStyle.shadow}
           placeholderTextColor="#000000"
           keyboardType="numeric"
-          value={formatToCurrencyInput(product.value).display}
+          value={formatToCurrencyInput(safeValue(localProduct.value)).display}
           onChangeText={(text) => {
             const { raw } = formatToCurrencyInput(text);
             handleChange("value", raw);
