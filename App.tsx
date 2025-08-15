@@ -30,7 +30,7 @@ export default function App() {
         <Stack.Screen name="ProductCreateScreen" options={{title: 'Novo Produto 📦'}} component={ProductCreateScreen} />
         <Stack.Screen name="ProductsListScreen" options={{title: 'Lista de Produtos 📦'}}  component={ProductsListScreen} />
         <Stack.Screen name="ProductEditScreen" options={{title: 'Editar Produto 📦'}} component={ProductEditScreen} />
-        <Stack.Screen name="StockCreateScreen" options={{title: 'Estoque de produtos 📦'}} component={CreateEntryStockProductScreen} />
+        <Stack.Screen name="StockCreateScreen" options={{title: 'Entrada de produtos 📦'}} component={CreateEntryStockProductScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
