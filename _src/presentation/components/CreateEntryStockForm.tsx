@@ -1,10 +1,12 @@
 import { StockMovement } from "@/_src/domain/models/StockMovement";
 import { formatToCurrencyInput } from "@/_src/utils/maskValue";
 import { useState } from "react";
-import { Image, ScrollView } from "react-native";
+import { Alert, Image, ScrollView } from "react-native";
+import v4 from "react-native-uuid";
 import { Container } from "../screens/style/container";
 import { shadowStyle } from "../screens/style/shadowStyle";
-import { ButtonLarge, CircleQtdControll, CircleTextQtdControll, ContainerViewNumbers, InputText, InputTextValue, LabelText, LabelTextButton, TextQtdControll } from "./style/ProductFormStyle";
+import { InputBarCode } from "./InputBarCode";
+import { ButtonLarge, CircleQtdControll, CircleTextQtdControll, ContainerViewNumbers, InputTextValue, LabelText, LabelTextButton, TextQtdControll } from "./style/ProductFormStyle";
 
 interface StockFormProps {
   onCreate: (stock: StockMovement) => Promise<void>;
@@ -13,9 +15,12 @@ interface StockFormProps {
 
 export function CreateEntryStockForm({loading, onCreate}: StockFormProps) {
     const [formData, setFormData] = useState({
+        id: '',
         product_id: '', 
         qtd: 0, 
         cost: 0,
+        type: "entrada",
+        date_movement: new Date().toISOString(),
       });
 
     const handleDecrease = () => {
@@ -42,17 +47,43 @@ export function CreateEntryStockForm({loading, onCreate}: StockFormProps) {
     };
 
     const handleSave = async () => {
-        
+      if (!formData.product_id) {
+        Alert.alert("Por favor, informe o código de barras.");
+        return;
+      }
+      if (formData.qtd <= 0) {
+        Alert.alert("A quantidade deve ser maior que zero.");
+        return;
+      }
+      if (formData.cost <= 0) {
+        Alert.alert("O valor deve ser maior que zero.");
+        return;
+      }
+
+      const movementToSave = {
+        ...formData,
+        id: v4.v4(),
+      }
+      await onCreate(movementToSave);
+      Alert.alert('Lançamento de entrada feito com sucesso!')
+      setFormData({
+        id: '',
+        product_id: '', 
+        qtd: 0, 
+        cost: 0,
+        type: "entrada",
+        date_movement: new Date().toISOString(),
+      });
     };
   
   return (
     <ScrollView>
       <Container>
       <Image style={{alignSelf: 'center', marginBottom: 50}} source={require('../../../assets/LogoPinguim.png')}/>
-      <InputText
-        style={shadowStyle.shadow}
-        placeholder="Product ID V"
-        placeholderTextColor="#000000"
+      <InputBarCode
+        onBarCodeScanned={(code) => handleChange("product_id", code)}
+        value={formData.product_id}
+        placeholder="Código de barras aqui"
       />
 
         <ContainerViewNumbers>

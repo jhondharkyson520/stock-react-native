@@ -8,6 +8,7 @@ import { CreateEntryStockProductScreen } from "./_src/presentation/screens/Creat
 import { ProductCreateScreen } from "./_src/presentation/screens/ProductCreateScreen";
 import { ProductEditScreen } from "./_src/presentation/screens/ProductEditScreen";
 import { ProductsListScreen } from "./_src/presentation/screens/ProductListScreen";
+import { StockListScreen } from "./_src/presentation/screens/StockListScreen";
 
 export type RootStackParamList = {
   Home: undefined;
@@ -16,6 +17,7 @@ export type RootStackParamList = {
   ProductsListScreen: undefined;
   ProductEditScreen: { productId: string };
   StockCreateScreen: undefined;
+  StockListScreen: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -31,6 +33,7 @@ export default function App() {
         <Stack.Screen name="ProductsListScreen" options={{title: 'Lista de Produtos 📦'}}  component={ProductsListScreen} />
         <Stack.Screen name="ProductEditScreen" options={{title: 'Editar Produto 📦'}} component={ProductEditScreen} />
         <Stack.Screen name="StockCreateScreen" options={{title: 'Entrada de produtos 📦'}} component={CreateEntryStockProductScreen} />
+        <Stack.Screen name="StockListScreen" options={{title: 'Controle de estoque detalhado 📦'}} component={StockListScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

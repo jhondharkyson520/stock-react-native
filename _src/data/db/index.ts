@@ -30,7 +30,7 @@ export async function runMigrations(): Promise<void> {
        type TEXT NOT NULL CHECK(type IN ('entrada', 'saida')),
        qtd INTEGER NOT NULL,
        cost REAL NOT NULL,
-       date_movement DATE NOT NULL DEFAULT (datetime('now')),
+       date_movement DATE NOT NULL,
        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
      );`,
   ];

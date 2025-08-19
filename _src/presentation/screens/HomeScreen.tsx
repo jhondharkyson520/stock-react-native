@@ -25,6 +25,9 @@ export default function HomeScreen() {
       <TouchableOpacity onPress={() => navigation.navigate("StockCreateScreen")}>
         <Text>Entrada de produtos</Text>
       </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate("StockListScreen")}>
+        <Text>Controle de estoque detalhado</Text>
+      </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate("ProductsListScreen")}>
         <Text>Saída de produtos</Text>
       </TouchableOpacity>
