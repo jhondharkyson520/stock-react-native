@@ -2,10 +2,12 @@
 import { SQLiteProductRepository } from "@/_src/data/repositories/sqliteProductRepository";
 import { Product } from "@/_src/domain/models/Products";
 import { CreateProduct } from "@/_src/domain/usecases/product/CreateProduct";
+import { DecreaseQtdProduct } from "@/_src/domain/usecases/product/DecreaseQtdProduct";
 import { DeleteProducts } from "@/_src/domain/usecases/product/DeleteProduct";
 import { GetProductByBarCode } from "@/_src/domain/usecases/product/GetProductByBarCode";
 import { GetProductById } from "@/_src/domain/usecases/product/GetProductById";
 import { GetProducts } from "@/_src/domain/usecases/product/GetProducts";
+import { IncreaseQtdProduct } from "@/_src/domain/usecases/product/IncreaseQtdProduct";
 import { UpdateProduct } from "@/_src/domain/usecases/product/UpdateProduct";
 import { useCallback, useState } from "react";
 
@@ -14,6 +16,8 @@ const createProductUseCase = new CreateProduct(productRepository);
 const getProductsUseCase = new GetProducts(productRepository);
 const deleteProductUseCase = new DeleteProducts(productRepository);
 const updateProductUseCase = new UpdateProduct(productRepository);
+const increaseQtdProductUseCase = new IncreaseQtdProduct(productRepository);
+const decreaseQtdProductUseCase = new DecreaseQtdProduct(productRepository);
 const getProductById = new GetProductById(productRepository);
 const getProductByBarCode = new GetProductByBarCode(productRepository)
 
@@ -64,6 +68,24 @@ export const useProducts = () => {
         setError("Failed to update product");
       }
     };
+
+    const handleIncreaseQtdProduct = async (product: Partial<Product>) => {
+      try {
+        await increaseQtdProductUseCase.execute(product);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to increase product stock");
+      }
+    };
+
+    const handleDecreaseQtdProduct = async (product: Partial<Product>) => {
+      try {
+        await decreaseQtdProductUseCase.execute(product);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to decrease product stock");
+      }
+    };
     
     const productById = async (id: string) => {
       try {
@@ -97,5 +119,18 @@ export const useProducts = () => {
       }
     };
 
-  return {products, loading, error, handleCreateProduct, handleGetProducts, handleDeleteProduct, handleEditProduct, productById, productByBarCode, handleDumpProducts};
+  return {
+    products, 
+    loading,
+    error, 
+    handleCreateProduct, 
+    handleGetProducts, 
+    handleDeleteProduct, 
+    handleEditProduct, 
+    productById, 
+    productByBarCode, 
+    handleDumpProducts, 
+    handleIncreaseQtdProduct,
+    handleDecreaseQtdProduct
+  };
 };

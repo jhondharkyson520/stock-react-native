@@ -15,7 +15,7 @@ interface StockFormProps {
 }
 
 export function CreateEntryStockForm({loading, onCreate}: StockFormProps) {
-    const { productByBarCode, handleDumpProducts } = useProducts();
+    const { productByBarCode, handleIncreaseQtdProduct } = useProducts();
     const [formData, setFormData] = useState({
         id: '',
         product_id: '', 
@@ -73,7 +73,9 @@ export function CreateEntryStockForm({loading, onCreate}: StockFormProps) {
         ...formData,
         id: v4.v4(),
       }
+      await handleIncreaseQtdProduct({qtd: formData.qtd, code: formData.product_id});
       await onCreate(movementToSave);
+
       Alert.alert('Lançamento de entrada feito com sucesso!')
       setFormData({
         id: '',

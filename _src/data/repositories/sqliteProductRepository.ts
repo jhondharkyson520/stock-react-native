@@ -8,7 +8,10 @@ let db:SQLiteDatabase;
     db = await getDB();
 })();
 
-export class SQLiteProductRepository implements IProductRepository {  
+export class SQLiteProductRepository implements IProductRepository {
+    updateQtdProduct(product: Partial<Product>): Promise<void> {
+        throw new Error("Method not implemented.");
+    }  
     async createProduct(product: Omit<Product, "id">): Promise<Product> {        
         const result = await db.runAsync(
             `INSERT INTO products (name, code, description, qtd, value, image) VALUES (?, ?, ?, ?, ?, ?)`,
@@ -78,6 +81,66 @@ export class SQLiteProductRepository implements IProductRepository {
             ]
         );
     }
+
+    async increaseQtdProduct(product: Partial<Product>): Promise<void> {
+        if (product.qtd == null || !product.code) {
+            throw new Error("Product QTD or BAR CODE is required for stock increase.");
+        }
+
+        const qtdChange = Number(product.qtd);
+        if (isNaN(qtdChange) || qtdChange <= 0) {
+            throw new Error("Quantidade inválida para entrada.");
+        }
+
+        const current = await db.getFirstAsync<{ qtd: number }>(
+            `SELECT qtd FROM products WHERE code = ?`,
+            [product.code]
+        );
+
+        if (!current) {
+            throw new Error("Produto não encontrado para atualizar estoque.");
+        }
+
+        const newQtd = Number(current.qtd) + qtdChange;
+
+        await db.runAsync(
+            `UPDATE products SET qtd = ? WHERE code = ?`,
+            [newQtd, product.code]
+        );
+    }
+
+    async decreaseQtdProduct(product: Partial<Product>): Promise<void> {
+        if (product.qtd == null || !product.code) {
+            throw new Error("Product QTD or BAR CODE is required for stock decrease.");
+        }
+
+        const qtdChange = Number(product.qtd);
+        if (isNaN(qtdChange) || qtdChange <= 0) {
+            throw new Error("Quantidade inválida para saída.");
+        }
+
+        const current = await db.getFirstAsync<{ qtd: number }>(
+            `SELECT qtd FROM products WHERE code = ?`,
+            [product.code]
+        );
+
+        if (!current) {
+            throw new Error("Produto não encontrado para atualizar estoque.");
+        }
+
+        const qtdAtual = Number(current.qtd);
+        if (qtdAtual < qtdChange) {
+            throw new Error("Estoque insuficiente para saída.");
+        }
+
+        const newQtd = qtdAtual - qtdChange;
+
+        await db.runAsync(
+            `UPDATE products SET qtd = ? WHERE code = ?`,
+            [newQtd, product.code]
+        );
+    }
+
     async deleteProduct(id: string): Promise<void> {
         await db.runAsync("DELETE FROM products WHERE id=?", [id]);
     }
