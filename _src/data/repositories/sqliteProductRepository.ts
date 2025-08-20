@@ -33,10 +33,34 @@ export class SQLiteProductRepository implements IProductRepository {
        const result = await db.getAllAsync<Product>('SELECT * FROM products');
        return result
     }
+
     async getByIdProduct(id: string): Promise<Product | null> {
         const result = await db.getFirstAsync<Product>('SELECT * FROM products WHERE id=?', [id]);
         return result;
     }
+
+    async getByBarCodeProduct(code: string): Promise<Product | null> {
+        try {
+            const result = await db.getFirstAsync<Product>('SELECT * FROM products WHERE code=?', [code]);
+            console.log('Resultado da query:', result);
+            return result;
+        } catch (err) {
+            console.error('Erro na query getByBarCodeProduct:', err);
+            return null;
+        }
+    }
+
+    async dumpProducts(): Promise<Product[]> {
+        try {
+            const allProducts = await db.getAllAsync<Product>('SELECT * FROM products');
+            console.log('Dump completo da tabela products:', allProducts);
+            return allProducts;
+        } catch (err) {
+            console.error('Erro no dump:', err);
+            return [];
+        }
+    }
+
     async updateProduct(product: Product): Promise<void> {
         if(!product.id) {
             throw new Error("Product ID is required for update.");

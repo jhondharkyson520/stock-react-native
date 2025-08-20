@@ -3,6 +3,7 @@ import { SQLiteProductRepository } from "@/_src/data/repositories/sqliteProductR
 import { Product } from "@/_src/domain/models/Products";
 import { CreateProduct } from "@/_src/domain/usecases/product/CreateProduct";
 import { DeleteProducts } from "@/_src/domain/usecases/product/DeleteProduct";
+import { GetProductByBarCode } from "@/_src/domain/usecases/product/GetProductByBarCode";
 import { GetProductById } from "@/_src/domain/usecases/product/GetProductById";
 import { GetProducts } from "@/_src/domain/usecases/product/GetProducts";
 import { UpdateProduct } from "@/_src/domain/usecases/product/UpdateProduct";
@@ -13,7 +14,8 @@ const createProductUseCase = new CreateProduct(productRepository);
 const getProductsUseCase = new GetProducts(productRepository);
 const deleteProductUseCase = new DeleteProducts(productRepository);
 const updateProductUseCase = new UpdateProduct(productRepository);
-const getProductById = new GetProductById(productRepository)
+const getProductById = new GetProductById(productRepository);
+const getProductByBarCode = new GetProductByBarCode(productRepository)
 
 export const useProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -73,6 +75,27 @@ export const useProducts = () => {
       }
     }
 
+    const productByBarCode = async (code: string) => {
+      try {
+        const product = await getProductByBarCode.execute(code);
+        return product;
+      } catch (err) {
+        //console.error('Erro ao buscar por barcode:', err);
+        setError("Failed to load product by barcode");
+        return null;
+      }
+    }
 
-  return {products, loading, error, handleCreateProduct, handleGetProducts, handleDeleteProduct, handleEditProduct, productById};
+    const handleDumpProducts = async () => {
+      //função criada para facilitar os testes, quando for preciso da lista de produtos cadastrados no bd
+      // button pronto para chamar ela: <Button title="Dump BD" onPress={handleDumpProducts} />
+      try {
+        await productRepository.dumpProducts();
+      } catch (err) {
+        console.error('Erro ao dump products:', err);
+        setError("Failed to dump products");
+      }
+    };
+
+  return {products, loading, error, handleCreateProduct, handleGetProducts, handleDeleteProduct, handleEditProduct, productById, productByBarCode, handleDumpProducts};
 };

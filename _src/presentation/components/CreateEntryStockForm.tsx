@@ -3,6 +3,7 @@ import { formatToCurrencyInput } from "@/_src/utils/maskValue";
 import { useState } from "react";
 import { Alert, Image, ScrollView } from "react-native";
 import v4 from "react-native-uuid";
+import { useProducts } from "../hooks/useProducts";
 import { Container } from "../screens/style/container";
 import { shadowStyle } from "../screens/style/shadowStyle";
 import { InputBarCode } from "./InputBarCode";
@@ -14,6 +15,7 @@ interface StockFormProps {
 }
 
 export function CreateEntryStockForm({loading, onCreate}: StockFormProps) {
+    const { productByBarCode, handleDumpProducts } = useProducts();
     const [formData, setFormData] = useState({
         id: '',
         product_id: '', 
@@ -48,15 +50,22 @@ export function CreateEntryStockForm({loading, onCreate}: StockFormProps) {
 
     const handleSave = async () => {
       if (!formData.product_id) {
-        Alert.alert("Por favor, informe o código de barras.");
+        Alert.alert("Erro", "Por favor, informe o código de barras.");
         return;
       }
       if (formData.qtd <= 0) {
-        Alert.alert("A quantidade deve ser maior que zero.");
+        Alert.alert("Erro", "A quantidade deve ser maior que zero.");
         return;
       }
       if (formData.cost <= 0) {
-        Alert.alert("O valor deve ser maior que zero.");
+        Alert.alert("Erro", "O valor deve ser maior que zero.");
+        return;
+      }
+
+      const product = await productByBarCode(formData.product_id.toString());
+
+      if (!product) {
+        Alert.alert("Erro", "Produto com o código de barras informado não está cadastrado.");
         return;
       }
 
