@@ -5,6 +5,7 @@ import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import * as SQLite from "expo-sqlite";
 import React from "react";
 import { CreateEntryStockProductScreen } from "./_src/presentation/screens/CreateEntryStockProductScreen";
+import { CreateExitStockProductScreen } from "./_src/presentation/screens/CreateExitStockProductScreen";
 import { ProductCreateScreen } from "./_src/presentation/screens/ProductCreateScreen";
 import { ProductEditScreen } from "./_src/presentation/screens/ProductEditScreen";
 import { ProductsListScreen } from "./_src/presentation/screens/ProductListScreen";
@@ -17,6 +18,7 @@ export type RootStackParamList = {
   ProductsListScreen: undefined;
   ProductEditScreen: { productId: string };
   StockCreateScreen: undefined;
+  StockExitScreen: undefined;
   StockListScreen: undefined;
 };
 
@@ -33,6 +35,7 @@ export default function App() {
         <Stack.Screen name="ProductsListScreen" options={{title: 'Lista de Produtos 📦'}}  component={ProductsListScreen} />
         <Stack.Screen name="ProductEditScreen" options={{title: 'Editar Produto 📦'}} component={ProductEditScreen} />
         <Stack.Screen name="StockCreateScreen" options={{title: 'Entrada de produtos 📦'}} component={CreateEntryStockProductScreen} />
+        <Stack.Screen name="StockExitScreen" options={{title: 'Saída de produtos 📦'}} component={CreateExitStockProductScreen} />
         <Stack.Screen name="StockListScreen" options={{title: 'Controle de estoque detalhado 📦'}} component={StockListScreen} />
       </Stack.Navigator>
     </NavigationContainer>
