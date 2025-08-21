@@ -9,7 +9,7 @@ let db: SQLiteDatabase;
 })();
 
 export class SQLiteStockMovementRepository implements IStockMovementRepository {
-  getHistoryStockEntry(): Promise<StockMovement> {
+  getStockMovementById(id: string): Promise<StockMovement | null> {
     throw new Error("Method not implemented.");
   }
   async createStock(stockMovement: StockMovement): Promise<StockMovement> {
@@ -43,8 +43,17 @@ export class SQLiteStockMovementRepository implements IStockMovementRepository {
 
       return stockMovements;
     } catch (err) {
-      console.log('Erro em getHistoryStockEntry: ', err);
+      //console.log('Erro em getHistoryStockEntry: ', err);
       throw new Error(`Erro ao selecionar historico de estoque`);
+    }
+  }
+
+  async deleteStockHistoryById(id: string): Promise<void> {
+    try {      
+      await db.runAsync("DELETE FROM stock_movements WHERE id=?", [id]);
+    } catch (err) {
+      console.log('Erro em deleteStockHistoryById: ', err);
+      throw new Error(`Erro ao deletar historico de estoque`);
     }
   }
 }

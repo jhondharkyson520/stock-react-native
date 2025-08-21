@@ -3,11 +3,13 @@ import { RootStackParamList } from "@/App";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
+import { shadowStyle } from "../screens/style/shadowStyle";
+import { ButtonLarge, LabelTextButton } from "./style/ProductFormStyle";
 
 interface StockRowProps {
   stock: StockMovement;
-  //onDelete: (id: string) => void;
+  onDelete: (id: string) => void;
 }
 
 type StockRowScreenNavigationProp = NativeStackNavigationProp<
@@ -16,21 +18,18 @@ type StockRowScreenNavigationProp = NativeStackNavigationProp<
 >;
 
 
-export function StockRow({stock}: StockRowProps) {
+export function StockRow({stock, onDelete}: StockRowProps) {
   const navigation = useNavigation<StockRowScreenNavigationProp>();
-  /*
-  
-  const deleteProduct = async () => {
-    if(!product.id) return;
+
+  const deleteHistoryStock = async () => {
+    if(!stock.id) return;
     try {
-      await onDelete(product.id);
-      Alert.alert('Product deleted success');
+      await onDelete(stock.id);
+      Alert.alert('Success!', 'Product deleted success');
     } catch (err) {
-      Alert.alert('Error delete product');
+      Alert.alert('Error!', 'Error delete product');
     }
   };
-  
-  */
 
 
   return (
@@ -42,6 +41,9 @@ export function StockRow({stock}: StockRowProps) {
         <Text style={styles.name}>qtd: {stock.qtd}</Text>
         <Text style={styles.name}>cost: {stock.cost}</Text>
         <Text style={styles.name}>date_movement: {stock.date_movement}</Text>
+        <ButtonLarge style={shadowStyle.shadow} onPress={deleteHistoryStock}>
+          <LabelTextButton>Deletar</LabelTextButton>
+        </ButtonLarge> 
       </View>
     </View>
   );

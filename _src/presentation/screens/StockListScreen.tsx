@@ -14,7 +14,7 @@ type StockListScreenNavigationProp = NativeStackNavigationProp<
 >;
 
 export function StockListScreen() {
-  const { stock, loading, error, handleGetHistoryStock } = useStockMovement();
+  const { stock, loading, error, handleGetHistoryStock, handleDeleteHistoryStock } = useStockMovement();
   const [dbReady, setDbReady] = useState(false);
   const navigation = useNavigation<StockListScreenNavigationProp>();
 
@@ -51,11 +51,11 @@ export function StockListScreen() {
           renderItem={({ item }) => (
             <StockRow 
               stock={item}
-              //onDelete={handleDeleteProduct}
+              onDelete={handleDeleteHistoryStock}
             />
           )}
           refreshing={loading}
-          //onRefresh={handleGetProducts}
+          onRefresh={handleGetHistoryStock}
           ListEmptyComponent={<Text>Nenhuma movimentação encontrada.</Text>}
         />
     </Container>

@@ -68,18 +68,24 @@ export function CreateExitStockForm({loading, onCreate}: StockFormProps) {
         ...formData,
         id: v4.v4(),
       }
-      await handleDecreaseQtdProduct({qtd: formData.qtd, code: formData.product_id});
-      await onCreate(movementToSave);
+       try {
+        await handleDecreaseQtdProduct({ qtd: formData.qtd, code: formData.product_id });
+        await onCreate(movementToSave);
+        Alert.alert('Lançamento de saída feito com sucesso!');
 
-      Alert.alert('Lançamento de saída feito com sucesso!')
-      setFormData({
-        id: '',
-        product_id: '', 
-        qtd: 1, 
-        cost: 0,
-        type: "saida",
-        date_movement: new Date().toISOString(),
-      });
+        setFormData({
+          id: '',
+          product_id: '', 
+          qtd: 1, 
+          cost: 0,
+          type: "saida",
+          date_movement: new Date().toISOString(),
+        });
+
+      } catch (error) {
+        console.log('Erro em handlesave', error);
+        throw error;
+      }
     };
   
   return (

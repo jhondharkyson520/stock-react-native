@@ -4,7 +4,7 @@ import { IStockMovementRepository } from "../../repositories/IStockMovementRepos
 export class CreateStockMovement {
   constructor(private stockRepository: IStockMovementRepository) {}
 
-  async execute(stockMovement: Omit<StockMovement, "id">): Promise<StockMovement> {
+  async execute(stockMovement: StockMovement): Promise<StockMovement> {
     return this.stockRepository.createStock(stockMovement);
   }
 }
