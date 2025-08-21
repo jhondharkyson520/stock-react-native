@@ -48,43 +48,43 @@ export function CreateEntryStockForm({loading, onCreate}: StockFormProps) {
         return String(cost);
     };
 
-    const handleSave = async () => {
-      if (!formData.product_id) {
-        Alert.alert("Erro", "Por favor, informe o código de barras.");
-        return;
-      }
-      if (formData.qtd <= 0) {
-        Alert.alert("Erro", "A quantidade deve ser maior que zero.");
-        return;
-      }
-      if (formData.cost <= 0) {
-        Alert.alert("Erro", "O valor deve ser maior que zero.");
-        return;
-      }
+    const handleSave = async () => {      
+      try {
+        if (!formData.product_id) {
+          Alert.alert("Erro", "Por favor, informe o código de barras.");
+          return;
+        }
+        if (formData.qtd <= 0) {
+          Alert.alert("Erro", "A quantidade deve ser maior que zero.");
+          return;
+        }
+        if (formData.cost <= 0) {
+          Alert.alert("Erro", "O valor deve ser maior que zero.");
+          return;
+        }
 
-      const product = await productByBarCode(formData.product_id.toString());
+        const product = await productByBarCode(formData.product_id.toString());
+        if (!product) {
+          Alert.alert("Erro", "Produto com o código de barras informado não está cadastrado.");
+          return;
+        }
 
-      if (!product) {
-        Alert.alert("Erro", "Produto com o código de barras informado não está cadastrado.");
-        return;
+        const movementToSave = { ...formData, id: v4.v4() };
+        await handleIncreaseQtdProduct({ code: formData.product_id, qtd: formData.qtd });
+        await onCreate(movementToSave);
+        Alert.alert("Sucesso", "Lançamento de entrada feito com sucesso!");
+        setFormData({
+          id: "",
+          product_id: "",
+          qtd: 0,
+          cost: 0,
+          type: "entrada",
+          date_movement: new Date().toISOString(),
+        });
+        
+      } catch (err: any) {
+        Alert.alert("Erro", err.message ?? "Falha ao lançar entrada");
       }
-
-      const movementToSave = {
-        ...formData,
-        id: v4.v4(),
-      }
-      await handleIncreaseQtdProduct({qtd: formData.qtd, code: formData.product_id});
-      await onCreate(movementToSave);
-
-      Alert.alert('Lançamento de entrada feito com sucesso!')
-      setFormData({
-        id: '',
-        product_id: '', 
-        qtd: 0, 
-        cost: 0,
-        type: "entrada",
-        date_movement: new Date().toISOString(),
-      });
     };
   
   return (
