@@ -9,9 +9,6 @@ let db:SQLiteDatabase;
 })();
 
 export class SQLiteProductRepository implements IProductRepository {
-    updateQtdProduct(product: Partial<Product>): Promise<void> {
-        throw new Error("Method not implemented.");
-    }  
     async createProduct(product: Omit<Product, "id">): Promise<Product> {        
         const result = await db.runAsync(
             `INSERT INTO products (name, code, description, qtd, value, image) VALUES (?, ?, ?, ?, ?, ?)`,
@@ -45,10 +42,10 @@ export class SQLiteProductRepository implements IProductRepository {
     async getByBarCodeProduct(code: string): Promise<Product | null> {
         try {
             const result = await db.getFirstAsync<Product>('SELECT * FROM products WHERE code=?', [code]);
-            console.log('Resultado da query:', result);
+            //console.log('Resultado da query:', result);
             return result;
         } catch (err) {
-            console.error('Erro na query getByBarCodeProduct:', err);
+            //console.error('Erro na query getByBarCodeProduct:', err);
             return null;
         }
     }
@@ -140,6 +137,15 @@ export class SQLiteProductRepository implements IProductRepository {
             [newQtd, product.code]
         );
     }
+
+    async findByCode(code: string): Promise<Product | null> {
+    const result = await db.getFirstAsync("SELECT * FROM products WHERE code = ?", [code]);
+    return result ? (result as Product) : null;
+  }
+
+  async updateQuantity(code: string, qtd: number): Promise<void> {
+    await db.runAsync("UPDATE products SET qtd = ? WHERE code = ?", [qtd, code]);
+  }
 
     async deleteProduct(id: string): Promise<void> {
         await db.runAsync("DELETE FROM products WHERE id=?", [id]);

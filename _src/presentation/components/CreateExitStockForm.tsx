@@ -82,9 +82,9 @@ export function CreateExitStockForm({loading, onCreate}: StockFormProps) {
           date_movement: new Date().toISOString(),
         });
 
-      } catch (error) {
-        console.log('Erro em handlesave', error);
-        throw error;
+      } catch (error: any) {
+        //console.log('Erro em handlesave', error);
+        Alert.alert("Erro", error.message ?? "Falha ao lançar saída.");
       }
     };
   

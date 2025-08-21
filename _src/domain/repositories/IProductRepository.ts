@@ -9,4 +9,7 @@ export interface IProductRepository {
     increaseQtdProduct(product: Partial<Product>): Promise<void>;
     decreaseQtdProduct(product: Partial<Product>): Promise<void>;
     deleteProduct(id: string): Promise<void>;
+
+    findByCode(code: string): Promise<Product | null>;
+  updateQuantity(code: string, qtd: number): Promise<void>;
 }

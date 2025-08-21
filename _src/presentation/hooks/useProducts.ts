@@ -78,13 +78,11 @@ export const useProducts = () => {
       }
     };
 
-    const handleDecreaseQtdProduct = async (product: Partial<Product>) => {
-      try {
-        await decreaseQtdProductUseCase.execute(product);
-      } catch (err) {
-        console.error(err);
-        setError("Failed to decrease product stock");
-      }
+    const handleDecreaseQtdProduct = async (product: { code?: string; qtd?: number }) => {
+        if (!product.code || !product.qtd) {
+          throw new Error("Code and QTD required");
+        }
+        await decreaseQtdProductUseCase.execute(product.code, product.qtd);
     };
     
     const productById = async (id: string) => {
