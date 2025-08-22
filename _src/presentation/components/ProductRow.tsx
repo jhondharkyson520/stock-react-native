@@ -25,9 +25,9 @@ export function ProductRow({product, onDelete}: ProductRowProps) {
     if(!product.id) return;
     try {
       await onDelete(product.id);
-      Alert.alert('Product deleted success');
-    } catch (err) {
-      Alert.alert('Error delete product');
+      Alert.alert('Success', 'Product deleted success');
+    } catch (err: any) {
+      Alert.alert("Erro", err.message ?? "Falha ao deletar produto");
     }
   };
 

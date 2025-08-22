@@ -84,9 +84,8 @@ export function ProductEdit({product, onEdit}: ProductEditProps) {
       Alert.alert("Atualizado", "Produto atualizado com sucesso");
       
       navigation.goBack();          
-    } catch(err) {
-      //console.error(err);
-      Alert.alert("Erro", "Não foi possível salvar o produto");
+    } catch(err: any) {
+      Alert.alert("Erro", err.message ?? "Falha ao atualizar produto");
     } finally {      
       setLoading(false); 
     }

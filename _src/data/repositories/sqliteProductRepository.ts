@@ -31,7 +31,7 @@ export class SQLiteProductRepository implements IProductRepository {
 
     async getAllProducts(): Promise<Product[]> {
         const result = await db.getAllAsync<Product>('SELECT * FROM products');
-        return result
+        return result;
     }
 
     async getByIdProduct(id: string): Promise<Product | null> {
@@ -61,22 +61,20 @@ export class SQLiteProductRepository implements IProductRepository {
         }
     }
 
-    async updateProduct(product: Product): Promise<void> {
-        if (!product.id) {
-            throw new Error("Product ID is required for update.");
-        }
-
-        await db.runAsync(`UPDATE products SET name = ?, code = ?, description = ?, qtd = ?, value = ?, image = ? WHERE id = ?`,
-            [
-                product.name,
-                product.code,
-                product.description,
-                Number(product.qtd),
-                Number(product.value),
-                product.image,
-                product.id
-            ]
-        );
+    async updateProduct(product: Product): Promise<void> {      
+        if(product.id){
+            await db.runAsync(`UPDATE products SET name = ?, code = ?, description = ?, qtd = ?, value = ?, image = ? WHERE id = ?`,
+                [
+                    product.name,
+                    product.code,
+                    product.description,
+                    Number(product.qtd),
+                    Number(product.value),
+                    product.image,
+                    product.id
+                ]
+            );
+        }        
     }
 
     async findByCode(code: string): Promise<Product | null> {

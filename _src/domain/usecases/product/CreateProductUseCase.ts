@@ -1,10 +1,10 @@
 import { Product } from "../../models/Products";
 import { IProductRepository } from "../../repositories/IProductRepository";
 
-export class UpdateProduct {
+export class CreateProductUseCase {
   constructor(private productRepository: IProductRepository) {}
 
-  async execute(product: Product): Promise<void> {
-    return this.productRepository.updateProduct(product);
+  async execute(product: Omit<Product, "id">): Promise<Product> {
+    return this.productRepository.createProduct(product);
   }
 }

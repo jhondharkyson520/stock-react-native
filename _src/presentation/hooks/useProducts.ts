@@ -1,21 +1,21 @@
 
 import { SQLiteProductRepository } from "@/_src/data/repositories/sqliteProductRepository";
 import { Product } from "@/_src/domain/models/Products";
-import { CreateProduct } from "@/_src/domain/usecases/product/CreateProduct";
+import { CreateProductUseCase } from "@/_src/domain/usecases/product/CreateProductUseCase";
 import { DecreaseQtdProductUseCase } from "@/_src/domain/usecases/product/DecreaseQtdProductUseCase";
-import { DeleteProducts } from "@/_src/domain/usecases/product/DeleteProduct";
+import { DeleteProductsUseCase } from "@/_src/domain/usecases/product/DeleteProductUseCase";
 import { GetProductByBarCode } from "@/_src/domain/usecases/product/GetProductByBarCode";
 import { GetProductById } from "@/_src/domain/usecases/product/GetProductById";
 import { GetProducts } from "@/_src/domain/usecases/product/GetProducts";
 import { IncreaseQtdProductUseCase } from "@/_src/domain/usecases/product/IncreaseQtdProductUseCase";
-import { UpdateProduct } from "@/_src/domain/usecases/product/UpdateProduct";
+import { UpdateProductUseCase } from "@/_src/domain/usecases/product/UpdateProductUseCase";
 import { useCallback, useState } from "react";
 
 const productRepository = new SQLiteProductRepository();
-const createProductUseCase = new CreateProduct(productRepository);
+const createProductUseCase = new CreateProductUseCase(productRepository);
 const getProductsUseCase = new GetProducts(productRepository);
-const deleteProductUseCase = new DeleteProducts(productRepository);
-const updateProductUseCase = new UpdateProduct(productRepository);
+const deleteProductUseCase = new DeleteProductsUseCase(productRepository);
+const updateProductUseCase = new UpdateProductUseCase(productRepository);
 const increaseQtdProductUseCase = new IncreaseQtdProductUseCase(productRepository);
 const decreaseQtdProductUseCase = new DecreaseQtdProductUseCase(productRepository);
 const getProductById = new GetProductById(productRepository);
@@ -50,29 +50,21 @@ export const useProducts = () => {
       }
     }, []);
     
-    const handleDeleteProduct = async (id: string) => {
-      try {
-        await deleteProductUseCase.execute(id);
-        setProducts(prev => prev.filter(product => product.id !== id)); 
-      } catch (err) {
-        console.error(err);
-        setError("Failed to delete product");
-      }
+    const handleDeleteProduct = async (id: string) => { 
+      if(!id) throw new Error('Id is required to delete product');    
+      await deleteProductUseCase.execute(id);
+      setProducts(prev => prev.filter(product => product.id !== id));      
     };
 
     const handleEditProduct = async (product: Product) => {
-      try {
-        await updateProductUseCase.execute(product);
-      } catch (err) {
-        console.error(err);
-        setError("Failed to update product");
-      }
+      if(!product.id) throw new Error('Id is required to update product');
+      await updateProductUseCase.execute(product);      
     };
 
     const handleIncreaseQtdProduct = async (product: { code?: string; qtd?: number }) => {
       if (!product.code || !product.qtd) {
           throw new Error("Code and QTD required");
-        }
+      }
       await increaseQtdProductUseCase.execute(product.code, product.qtd);
     };
 
