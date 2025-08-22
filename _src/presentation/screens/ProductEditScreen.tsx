@@ -7,15 +7,15 @@ import { useProducts } from "../hooks/useProducts";
 import { Container } from "./style/container";
 
 export function ProductEditScreen() {
-  const {handleEditProduct, productById} = useProducts();
+  const {handleEditProduct, productByIdUseProducts} = useProducts();
   const route = useRoute();
   const {productId} = route.params as {productId: string};
   const [product, setProduct] = useState<Product | null>(null);
 
   useEffect(() => {
     const fetchProduct = async () => {
-      const foundProduct = await productById(productId);
-      if(foundProduct) setProduct(foundProduct);
+      const foundProduct = await productByIdUseProducts(productId);
+      if(foundProduct) setProduct(foundProduct);      
     };
     fetchProduct();
   }, [productId]);

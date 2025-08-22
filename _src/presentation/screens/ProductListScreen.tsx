@@ -3,7 +3,7 @@ import { RootStackParamList } from "@/App";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { FlatList, Text } from "react-native";
+import { Alert, FlatList, Text } from "react-native";
 import { ProductRow } from "../components/ProductRow";
 import { useProducts } from "../hooks/useProducts";
 import { Container } from "./style/container";
@@ -25,7 +25,8 @@ export function ProductsListScreen() {
         setDbReady(true);
         await handleGetProducts();
       } catch (e) {
-        console.error("Failed to initialize database:", e);
+        //console.error("Failed to initialize database:", e);
+        Alert.alert('Error', 'Failed to initialize database');
       }
     };
     initializeDb();

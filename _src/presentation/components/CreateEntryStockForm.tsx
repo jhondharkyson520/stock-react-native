@@ -15,7 +15,7 @@ interface StockFormProps {
 }
 
 export function CreateEntryStockForm({loading, onCreate}: StockFormProps) {
-    const { productByBarCode, handleIncreaseQtdProduct } = useProducts();
+    const { productByBarCodeUseProducts, handleIncreaseQtdProduct } = useProducts();
     const [formData, setFormData] = useState({
         id: '',
         product_id: '', 
@@ -63,7 +63,7 @@ export function CreateEntryStockForm({loading, onCreate}: StockFormProps) {
           return;
         }
 
-        const product = await productByBarCode(formData.product_id.toString());
+        const product = await productByBarCodeUseProducts(formData.product_id.toString());
         if (!product) {
           Alert.alert("Erro", "Produto com o código de barras informado não está cadastrado.");
           return;

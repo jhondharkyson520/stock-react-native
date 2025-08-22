@@ -34,20 +34,11 @@ export class SQLiteProductRepository implements IProductRepository {
         return result;
     }
 
-    async getByIdProduct(id: string): Promise<Product | null> {
-        const result = await db.getFirstAsync<Product>('SELECT * FROM products WHERE id=?', [id]);
-        return result;
-    }
+    
 
-    async getByBarCodeProduct(code: string): Promise<Product | null> {
-        try {
+    async getByBarCodeProduct(code: string): Promise<Product | null> {        
             const result = await db.getFirstAsync<Product>('SELECT * FROM products WHERE code=?', [code]);
-            //console.log('Resultado da query:', result);
-            return result;
-        } catch (err) {
-            //console.error('Erro na query getByBarCodeProduct:', err);
-            return null;
-        }
+            return result ? (result as Product) : null;          
     }
 
     async dumpProducts(): Promise<Product[]> {
@@ -76,7 +67,11 @@ export class SQLiteProductRepository implements IProductRepository {
             );
         }        
     }
-
+    
+    async getByIdProduct(id: string): Promise<Product | null> {
+        const result = await db.getFirstAsync<Product>('SELECT * FROM products WHERE id=?', [id]);
+        return result ? (result as Product) : null;
+    }
     async findByCode(code: string): Promise<Product | null> {
         const result = await db.getFirstAsync("SELECT * FROM products WHERE code = ?", [code]);
         return result ? (result as Product) : null;
