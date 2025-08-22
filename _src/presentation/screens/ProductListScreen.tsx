@@ -14,7 +14,7 @@ type ProductsListScreenNavigationProp = NativeStackNavigationProp<
 >;
 
 export function ProductsListScreen() {
-  const { products, loading, error, handleGetProducts, handleDeleteProduct, handleEditProduct } = useProducts();
+  const { products, loading, error, handleGetProductsUseProducts, handleDeleteProductUseProducts, handleEditProductUseProducts } = useProducts();
   const [dbReady, setDbReady] = useState(false);
   const navigation = useNavigation<ProductsListScreenNavigationProp>();
 
@@ -23,7 +23,7 @@ export function ProductsListScreen() {
       try {
         await runMigrations();
         setDbReady(true);
-        await handleGetProducts();
+        await handleGetProductsUseProducts();
       } catch (e) {
         //console.error("Failed to initialize database:", e);
         Alert.alert('Error', 'Failed to initialize database');
@@ -35,7 +35,7 @@ export function ProductsListScreen() {
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
       if (dbReady) {
-        handleGetProducts();
+        handleGetProductsUseProducts();
       }
     });
     return unsubscribe;
@@ -52,11 +52,11 @@ export function ProductsListScreen() {
           renderItem={({ item }) => (
             <ProductRow 
               product={item}
-              onDelete={handleDeleteProduct}
+              onDelete={handleDeleteProductUseProducts}
             />
           )}
           refreshing={loading}
-          onRefresh={handleGetProducts}
+          onRefresh={handleGetProductsUseProducts}
           ListEmptyComponent={<Text>Nenhum usuário encontrado.</Text>}
         />
     </Container>

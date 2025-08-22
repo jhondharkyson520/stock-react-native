@@ -1,14 +1,14 @@
 
 import { SQLiteProductRepository } from "@/_src/data/repositories/sqliteProductRepository";
 import { Product } from "@/_src/domain/models/Products";
-import { CreateProductUseCase } from "@/_src/domain/usecases/product/CreateProductUseCase";
-import { DecreaseQtdProductUseCase } from "@/_src/domain/usecases/product/DecreaseQtdProductUseCase";
-import { DeleteProductsUseCase } from "@/_src/domain/usecases/product/DeleteProductUseCase";
-import { GetProductByBarCodeUseCase } from "@/_src/domain/usecases/product/GetProductByBarCodeUseCase";
-import { GetProductByIdUseCase } from "@/_src/domain/usecases/product/GetProductByIdUseCase";
-import { GetProductsUseCase } from "@/_src/domain/usecases/product/GetProductsUseCase";
-import { IncreaseQtdProductUseCase } from "@/_src/domain/usecases/product/IncreaseQtdProductUseCase";
-import { UpdateProductUseCase } from "@/_src/domain/usecases/product/UpdateProductUseCase";
+import { CreateProductUseCase } from "@/_src/usecases/product/CreateProductUseCase";
+import { DecreaseQtdProductUseCase } from "@/_src/usecases/product/DecreaseQtdProductUseCase";
+import { DeleteProductsUseCase } from "@/_src/usecases/product/DeleteProductUseCase";
+import { GetProductByBarCodeUseCase } from "@/_src/usecases/product/GetProductByBarCodeUseCase";
+import { GetProductByIdUseCase } from "@/_src/usecases/product/GetProductByIdUseCase";
+import { GetProductsUseCase } from "@/_src/usecases/product/GetProductsUseCase";
+import { IncreaseQtdProductUseCase } from "@/_src/usecases/product/IncreaseQtdProductUseCase";
+import { UpdateProductUseCase } from "@/_src/usecases/product/UpdateProductUseCase";
 import { useCallback, useState } from "react";
 
 const productRepository = new SQLiteProductRepository();
@@ -26,7 +26,7 @@ export const useProducts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const handleCreateProduct = async (product: Omit<Product, "id">) => {
+  const handleCreateProductUseProducts = async (product: Omit<Product, "id">) => {
     try {
       await createProductUseCase.execute(product);
       setProducts([]);
@@ -36,7 +36,7 @@ export const useProducts = () => {
     }
   };
 
-  const handleGetProducts = useCallback(async () => {
+  const handleGetProductsUseProducts = useCallback(async () => {
     try {
       setLoading(true);
       const fetchedProducts = await getProductsUseCase.execute();
@@ -50,25 +50,25 @@ export const useProducts = () => {
     }
   }, []);
 
-  const handleDeleteProduct = async (id: string) => {
+  const handleDeleteProductUseProducts = async (id: string) => {
     if (!id) throw new Error('Id is required to delete product');
     await deleteProductUseCase.execute(id);
     setProducts(prev => prev.filter(product => product.id !== id));
   };
 
-  const handleEditProduct = async (product: Product) => {
+  const handleEditProductUseProducts = async (product: Product) => {
     if (!product.id) throw new Error('Id is required to update product');
     await updateProductUseCase.execute(product);
   };
 
-  const handleIncreaseQtdProduct = async (product: { code?: string; qtd?: number }) => {
+  const handleIncreaseQtdProductUseProducts = async (product: { code?: string; qtd?: number }) => {
     if (!product.code || !product.qtd) {
       throw new Error("Code and QTD required");
     }
     await increaseQtdProductUseCase.execute(product.code, product.qtd);
   };
 
-  const handleDecreaseQtdProduct = async (product: { code?: string; qtd?: number }) => {
+  const handleDecreaseQtdProductUseProducts = async (product: { code?: string; qtd?: number }) => {
     if (!product.code || !product.qtd) {
       throw new Error("Code and QTD required");
     }
@@ -85,7 +85,7 @@ export const useProducts = () => {
     return await getProductByBarCodeUseCase.execute(code);
   }
 
-  const handleDumpProducts = async () => {
+  const handleDumpProductsUseProducts = async () => {
     //função criada para facilitar os testes, quando for preciso da lista de produtos cadastrados no bd
     // button pronto para chamar ela: <Button title="Dump BD" onPress={handleDumpProducts} />
     try {
@@ -100,14 +100,14 @@ export const useProducts = () => {
     products,
     loading,
     error,
-    handleCreateProduct,
-    handleGetProducts,
-    handleDeleteProduct,
-    handleEditProduct,
+    handleCreateProductUseProducts,
+    handleGetProductsUseProducts,
+    handleDeleteProductUseProducts,
+    handleEditProductUseProducts,
     productByIdUseProducts,
     productByBarCodeUseProducts,
-    handleDumpProducts,
-    handleIncreaseQtdProduct,
-    handleDecreaseQtdProduct
+    handleDumpProductsUseProducts,
+    handleIncreaseQtdProductUseProducts,
+    handleDecreaseQtdProductUseProducts
   };
 };

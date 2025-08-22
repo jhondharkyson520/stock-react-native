@@ -9,13 +9,8 @@ let db: SQLiteDatabase;
 })();
 
 export class SQLiteStockMovementRepository implements IStockMovementRepository {
-  getStockMovementById(id: string): Promise<StockMovement | null> {
-    throw new Error("Method not implemented.");
-  }
   async createStock(stockMovement: StockMovement): Promise<StockMovement> {
-    try {
-      //console.log("Inserindo no banco:", stockMovement);
-      const result = await db.runAsync(
+    await db.runAsync(
         `INSERT INTO stock_movements (id, product_id, type, qtd, cost, date_movement) VALUES (?, ?, ?, ?, ?, ?)`,
         [
             stockMovement.id,
@@ -25,35 +20,24 @@ export class SQLiteStockMovementRepository implements IStockMovementRepository {
             stockMovement.cost,
             stockMovement.date_movement,
         ]
-      );
-      //console.log("Inserido com sucesso:", result);
-      return {
-        ...stockMovement
-      };
-    } catch (error) {
-      //console.error("Erro ao inserir entrada de estoque:", error);
-      throw new Error(`Erro ao inserir entrada de estoque`);
-    }
+    );
+    return {
+      ...stockMovement
+    };
   }
 
   async getHistoryStock(): Promise<StockMovement[]> {
-    try {
-      const result = await db.getAllAsync(`SELECT id, product_id, type, qtd, cost, date_movement FROM stock_movements`);
-      const stockMovements: StockMovement[] = result.map(item => item as StockMovement);
-
-      return stockMovements;
-    } catch (err) {
-      //console.log('Erro em getHistoryStockEntry: ', err);
-      throw new Error(`Erro ao selecionar historico de estoque`);
-    }
+    const result = await db.getAllAsync(`SELECT id, product_id, type, qtd, cost, date_movement FROM stock_movements`);
+    const stockMovements: StockMovement[] = result.map(item => item as StockMovement);
+    return stockMovements;
   }
 
-  async deleteStockHistoryById(id: string): Promise<void> {
-    try {      
-      await db.runAsync("DELETE FROM stock_movements WHERE id=?", [id]);
-    } catch (err) {
-      console.log('Erro em deleteStockHistoryById: ', err);
-      throw new Error(`Erro ao deletar historico de estoque`);
-    }
+  async deleteStockHistoryById(id: string): Promise<void> {     
+    await db.runAsync("DELETE FROM stock_movements WHERE id=?", [id]);  
+  }
+
+  
+  getStockMovementById(id: string): Promise<StockMovement | null> {
+    throw new Error("Method not implemented.");
   }
 }

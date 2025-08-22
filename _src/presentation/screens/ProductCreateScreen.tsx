@@ -6,7 +6,7 @@ import { useProducts } from "../hooks/useProducts";
 import { Container } from "./style/container";
 
 export function ProductCreateScreen() {
-  const {loading, error, handleCreateProduct} = useProducts();
+  const {loading, error, handleCreateProductUseProducts} = useProducts();
   const [dbReady, setDbReady] = useState(false);
   const [dbError, setDbError] = useState<string | null>(null);
 
@@ -28,7 +28,7 @@ export function ProductCreateScreen() {
 
   return (
     <Container>
-        <ProductForm onCreate={handleCreateProduct} loading={loading}/> 
+        <ProductForm onCreate={handleCreateProductUseProducts} loading={loading}/> 
     </Container>
   );
 }

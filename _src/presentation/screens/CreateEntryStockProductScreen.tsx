@@ -6,7 +6,7 @@ import { useStockMovement } from "../hooks/useStockMovement";
 import { Container } from "./style/container";
 
 export function CreateEntryStockProductScreen() {
-  const {loading, error, handleCreateStock} = useStockMovement();
+  const {loading, error, handleCreateStockUseStockMovement} = useStockMovement();
   const [dbReady, setDbReady] = useState(false);
   const [dbError, setDbError] = useState<string | null>(null);
 
@@ -28,7 +28,7 @@ export function CreateEntryStockProductScreen() {
 
   return (
     <Container>
-        <CreateEntryStockForm onCreate={handleCreateStock} loading={loading}/>
+        <CreateEntryStockForm onCreate={handleCreateStockUseStockMovement} loading={loading}/>
     </Container>
   );
 }

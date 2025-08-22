@@ -34,17 +34,16 @@ export function ProductRow({product, onDelete}: ProductRowProps) {
   return (
     <View style={styles.container}>
       <View style={styles.info}>
-        <Text style={styles.name}>id: {product.id}</Text>
-        <Text style={styles.name}>Nome: {product.name}</Text>
-        <Text style={styles.name}>Descrição: {product.description}</Text>
-        <Text style={styles.name}>Código de barras: {product.code}</Text>
-        <Text style={styles.name}>Valor: {product.value}</Text>
-        <Text style={styles.name}>Quantidade: {product.qtd}</Text>
         <View style={{ marginTop: 25, marginBottom: 25, alignItems: "center", justifyContent: "center" }}>
           <ContainerImageProduct style={shadowStyle.shadow}>
             {product.image == 'blank' ? <></> : <Image source={{ uri: product.image }} style={{ width: '100%', height: '100%', borderRadius: 8 }} />}                          
           </ContainerImageProduct>
         </View>
+        <Text style={styles.name}>Nome: {product.name}</Text>
+        {product.description ? <Text style={styles.name}>Descrição: {product.description}</Text> : <></>}
+        <Text style={styles.name}>Valor: {product.value}</Text>
+        <Text style={styles.name}>Quantidade: {product.qtd}</Text>
+        
         <ButtonLarge 
           style={shadowStyle.shadow} 
           onPress={() => {

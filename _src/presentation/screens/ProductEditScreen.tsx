@@ -7,7 +7,7 @@ import { useProducts } from "../hooks/useProducts";
 import { Container } from "./style/container";
 
 export function ProductEditScreen() {
-  const {handleEditProduct, productByIdUseProducts} = useProducts();
+  const {handleEditProductUseProducts, productByIdUseProducts} = useProducts();
   const route = useRoute();
   const {productId} = route.params as {productId: string};
   const [product, setProduct] = useState<Product | null>(null);
@@ -26,7 +26,7 @@ export function ProductEditScreen() {
     <Container>
         <ProductEdit
           product={product}
-          onEdit={handleEditProduct}
+          onEdit={handleEditProductUseProducts}
         /> 
     </Container>
   );

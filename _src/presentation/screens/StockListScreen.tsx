@@ -14,7 +14,7 @@ type StockListScreenNavigationProp = NativeStackNavigationProp<
 >;
 
 export function StockListScreen() {
-  const { stock, loading, error, handleGetHistoryStock, handleDeleteHistoryStock } = useStockMovement();
+  const { stock, loading, error, handleGetHistoryStockUseStockMovement, handleDeleteHistoryStockUseStockMovement } = useStockMovement();
   const [dbReady, setDbReady] = useState(false);
   const navigation = useNavigation<StockListScreenNavigationProp>();
 
@@ -23,7 +23,7 @@ export function StockListScreen() {
       try {
         await runMigrations();
         setDbReady(true);
-        await handleGetHistoryStock();
+        await handleGetHistoryStockUseStockMovement();
       } catch (e) {
         console.error("Failed to initialize database:", e);
       }
@@ -34,7 +34,7 @@ export function StockListScreen() {
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
       if (dbReady) {
-        handleGetHistoryStock();
+        handleGetHistoryStockUseStockMovement();
       }
     });
     return unsubscribe;
@@ -51,11 +51,11 @@ export function StockListScreen() {
           renderItem={({ item }) => (
             <StockRow 
               stock={item}
-              onDelete={handleDeleteHistoryStock}
+              onDelete={handleDeleteHistoryStockUseStockMovement}
             />
           )}
           refreshing={loading}
-          onRefresh={handleGetHistoryStock}
+          onRefresh={handleGetHistoryStockUseStockMovement}
           ListEmptyComponent={<Text>Nenhuma movimentação encontrada.</Text>}
         />
     </Container>

@@ -1,6 +1,6 @@
-import { IProductRepository } from "../../repositories/IProductRepository";
+import { IProductRepository } from "../../domain/repositories/IProductRepository";
 
-export class IncreaseQtdProductUseCase {
+export class DecreaseQtdProductUseCase {
   constructor(private productRepository: IProductRepository) {}
 
   async execute(productCode: string, qtd: number): Promise<void> {
@@ -10,7 +10,10 @@ export class IncreaseQtdProductUseCase {
     const product = await this.productRepository.findByCode(productCode);
     if (!product) throw new Error("Product not found");
 
-    await this.productRepository.updateQuantity(productCode, product.qtd + qtd);
+    if (product.qtd < qtd) {
+      throw new Error("Insufficient stock");
+    }
+
+    await this.productRepository.updateQuantity(productCode, product.qtd - qtd);
   }
 }
-

@@ -1,32 +1,31 @@
 
 import { SQLiteStockMovementRepository } from "@/_src/data/repositories/sqliteStockMovementRepository";
 import { StockMovement } from "@/_src/domain/models/StockMovement";
-import { CreateStockMovement } from "@/_src/domain/usecases/stockMovement/CreateStockMovement";
-import { DeleteHistoryStock } from "@/_src/domain/usecases/stockMovement/DeleteHistoryStock";
-import { GetHistoryStock } from "@/_src/domain/usecases/stockMovement/GetHistoryStock";
+import { CreateStockMovementUseCase } from "@/_src/usecases/stockMovement/CreateStockMovementUseCase";
+import { DeleteHistoryStockByIdUseCase } from "@/_src/usecases/stockMovement/DeleteHistoryStockByIdUseCase";
+import { GetHistoryStockUseCase } from "@/_src/usecases/stockMovement/GetHistoryStockUseCase";
 import { useCallback, useState } from "react";
 
 const stockMovementRepository = new SQLiteStockMovementRepository();
-const createStockMovementUseCase = new CreateStockMovement(stockMovementRepository);
-const getHistoryStockUseCase = new GetHistoryStock(stockMovementRepository);
-const deleteHistoryStockUseCase = new DeleteHistoryStock(stockMovementRepository);
+const createStockMovementUseCase = new CreateStockMovementUseCase(stockMovementRepository);
+const getHistoryStockUseCase = new GetHistoryStockUseCase(stockMovementRepository);
+const deleteHistoryStockByIdUseCase = new DeleteHistoryStockByIdUseCase(stockMovementRepository);
 
 export const useStockMovement = () => {
   const [stock, setStock] = useState<StockMovement[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const handleCreateStock = async (stockMovement: StockMovement) => {
-    try {
-      await createStockMovementUseCase.execute(stockMovement);
+  const handleCreateStockUseStockMovement = async (stockMovement: StockMovement) => {    
+    await createStockMovementUseCase.execute(stockMovement);
+    if(createStockMovementUseCase) {
       setStock(prev => [...prev, stockMovement]);
-    } catch (err) {
-      console.error(err);
-      setError("Failed to create user");
-    }
+    }else {
+      throw new Error('Erro ao cadastrar movimentação de estoque');
+    }    
   };
 
-  const handleGetHistoryStock = useCallback(async () => {
+  const handleGetHistoryStockUseStockMovement = useCallback(async () => {
      try {
       setLoading(true);
       const result = await getHistoryStockUseCase.execute();
@@ -42,10 +41,10 @@ export const useStockMovement = () => {
     }, []);
   
 
-  const handleDeleteHistoryStock = async (id: string) => {    
+  const handleDeleteHistoryStockUseStockMovement = async (id: string) => {    
     try {
       setLoading(true);
-      await deleteHistoryStockUseCase.execute(id);
+      await deleteHistoryStockByIdUseCase.execute(id);
       setStock(prev => prev.filter(stock => stock.id !== id)); 
     } catch (err) {
       console.error(err);
@@ -55,5 +54,5 @@ export const useStockMovement = () => {
     }
   }
 
-  return {stock, loading, error, handleCreateStock, handleGetHistoryStock, handleDeleteHistoryStock};
+  return {stock, loading, error, handleCreateStockUseStockMovement, handleGetHistoryStockUseStockMovement, handleDeleteHistoryStockUseStockMovement};
 };

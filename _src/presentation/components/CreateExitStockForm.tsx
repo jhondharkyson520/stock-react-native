@@ -14,7 +14,7 @@ interface StockFormProps {
 }
 
 export function CreateExitStockForm({loading, onCreate}: StockFormProps) {
-    const { productByBarCode, handleDecreaseQtdProduct } = useProducts();
+    const { productByBarCodeUseProducts, handleDecreaseQtdProductUseProducts } = useProducts();
     const [formData, setFormData] = useState({
         id: '',
         product_id: '', 
@@ -57,7 +57,7 @@ export function CreateExitStockForm({loading, onCreate}: StockFormProps) {
         return;
       }
 
-      const product = await productByBarCode(formData.product_id.toString());
+      const product = await productByBarCodeUseProducts(formData.product_id.toString());
 
       if (!product) {
         Alert.alert("Erro", "Produto com o código de barras informado não está cadastrado.");
@@ -69,7 +69,7 @@ export function CreateExitStockForm({loading, onCreate}: StockFormProps) {
         id: v4.v4(),
       }
        try {
-        await handleDecreaseQtdProduct({ qtd: formData.qtd, code: formData.product_id });
+        await handleDecreaseQtdProductUseProducts({ qtd: formData.qtd, code: formData.product_id });
         await onCreate(movementToSave);
         Alert.alert('Lançamento de saída feito com sucesso!');
 
