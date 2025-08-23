@@ -1,16 +1,20 @@
 import { StockMovement } from "@/_src/domain/models/StockMovement";
 import { IStockMovementRepository } from "@/_src/domain/repositories/IStockMovementRepository";
 import { SQLiteDatabase } from "expo-sqlite";
-import { getDB } from "../db";
 
-let db: SQLiteDatabase;
-(async () => {
-  db = await getDB();
-})();
+
 
 export class SQLiteStockMovementRepository implements IStockMovementRepository {
+  private db: SQLiteDatabase;
+
+  constructor(db: SQLiteDatabase) {
+    if (!db) {
+      throw new Error("DB não pode ser nulo");
+    }
+    this.db = db;
+  }
   async createStock(stockMovement: StockMovement): Promise<StockMovement> {
-    await db.runAsync(
+    await this.db.runAsync(
         `INSERT INTO stock_movements (id, product_id, type, qtd, cost, date_movement) VALUES (?, ?, ?, ?, ?, ?)`,
         [
             stockMovement.id,
@@ -27,13 +31,13 @@ export class SQLiteStockMovementRepository implements IStockMovementRepository {
   }
 
   async getHistoryStock(): Promise<StockMovement[]> {
-    const result = await db.getAllAsync(`SELECT id, product_id, type, qtd, cost, date_movement FROM stock_movements`);
+    const result = await this.db.getAllAsync(`SELECT id, product_id, type, qtd, cost, date_movement FROM stock_movements`);
     const stockMovements: StockMovement[] = result.map(item => item as StockMovement);
     return stockMovements;
   }
 
   async deleteStockHistoryById(id: string): Promise<void> {     
-    await db.runAsync("DELETE FROM stock_movements WHERE id=?", [id]);  
+    await this.db.runAsync("DELETE FROM stock_movements WHERE id=?", [id]);  
   }
 
   

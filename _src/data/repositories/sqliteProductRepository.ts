@@ -1,16 +1,18 @@
 import { Product } from "@/_src/domain/models/Products";
 import { IProductRepository } from "@/_src/domain/repositories/IProductRepository";
 import { SQLiteDatabase } from "expo-sqlite";
-import { getDB } from "../db";
-
-let db: SQLiteDatabase;
-(async () => {
-    db = await getDB();
-})();
 
 export class SQLiteProductRepository implements IProductRepository {
+    private db: SQLiteDatabase;
+
+    constructor(db: SQLiteDatabase) {
+        if (!db) {
+        throw new Error("DB não pode ser nulo");
+        }
+        this.db = db;
+    }
     async createProduct(product: Omit<Product, "id">): Promise<Product> {
-        const result = await db.runAsync(
+        const result = await this.db.runAsync(
             `INSERT INTO products (name, code, description, qtd, value, image) VALUES (?, ?, ?, ?, ?, ?)`,
             [
                 product.name,
@@ -30,20 +32,18 @@ export class SQLiteProductRepository implements IProductRepository {
     }
 
     async getAllProducts(): Promise<Product[]> {
-        const result = await db.getAllAsync<Product>('SELECT * FROM products');
+        const result = await this.db.getAllAsync<Product>('SELECT * FROM products');
         return result;
     }
-
-    
-
+  
     async getByBarCodeProduct(code: string): Promise<Product | null> {        
-            const result = await db.getFirstAsync<Product>('SELECT * FROM products WHERE code=?', [code]);
+            const result = await this.db.getFirstAsync<Product>('SELECT * FROM products WHERE code=?', [code]);
             return result ? (result as Product) : null;          
     }
 
     async dumpProducts(): Promise<Product[]> {
         try {
-            const allProducts = await db.getAllAsync<Product>('SELECT * FROM products');
+            const allProducts = await this.db.getAllAsync<Product>('SELECT * FROM products');
             console.log('Dump completo da tabela products:', allProducts);
             return allProducts;
         } catch (err) {
@@ -54,7 +54,7 @@ export class SQLiteProductRepository implements IProductRepository {
 
     async updateProduct(product: Product): Promise<void> {      
         if(product.id){
-            await db.runAsync(`UPDATE products SET name = ?, code = ?, description = ?, qtd = ?, value = ?, image = ? WHERE id = ?`,
+            await this.db.runAsync(`UPDATE products SET name = ?, code = ?, description = ?, qtd = ?, value = ?, image = ? WHERE id = ?`,
                 [
                     product.name,
                     product.code,
@@ -69,19 +69,25 @@ export class SQLiteProductRepository implements IProductRepository {
     }
     
     async getByIdProduct(id: string): Promise<Product | null> {
-        const result = await db.getFirstAsync<Product>('SELECT * FROM products WHERE id=?', [id]);
+        const result = await this.db.getFirstAsync<Product>('SELECT * FROM products WHERE id=?', [id]);
         return result ? (result as Product) : null;
     }
+
     async findByCode(code: string): Promise<Product | null> {
-        const result = await db.getFirstAsync("SELECT * FROM products WHERE code = ?", [code]);
+        const result = await this.db.getFirstAsync("SELECT * FROM products WHERE code = ?", [code]);
         return result ? (result as Product) : null;
     }
 
     async updateQuantity(code: string, qtd: number): Promise<void> {
-        await db.runAsync("UPDATE products SET qtd = ? WHERE code = ?", [qtd, code]);
+        await this.db.runAsync("UPDATE products SET qtd = ? WHERE code = ?", [qtd, code]);
     }
 
     async deleteProduct(id: string): Promise<void> {
-        await db.runAsync("DELETE FROM products WHERE id=?", [id]);
+        await this.db.runAsync("DELETE FROM products WHERE id=?", [id]);
+    }
+
+    async listOfProductsOfQtdMinimumInStock(): Promise<Product[]> {
+        const result = await this.db.getAllAsync<Product>("SELECT * FROM products WHERE qtd < 3");
+        return result;
     }
 }

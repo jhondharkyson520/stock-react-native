@@ -1,4 +1,5 @@
 
+import { useDatabase } from "@/_src/data/db/DataBaseContext";
 import { SQLiteStockMovementRepository } from "@/_src/data/repositories/sqliteStockMovementRepository";
 import { StockMovement } from "@/_src/domain/models/StockMovement";
 import { CreateStockMovementUseCase } from "@/_src/usecases/stockMovement/CreateStockMovementUseCase";
@@ -6,12 +7,14 @@ import { DeleteHistoryStockByIdUseCase } from "@/_src/usecases/stockMovement/Del
 import { GetHistoryStockUseCase } from "@/_src/usecases/stockMovement/GetHistoryStockUseCase";
 import { useCallback, useState } from "react";
 
-const stockMovementRepository = new SQLiteStockMovementRepository();
-const createStockMovementUseCase = new CreateStockMovementUseCase(stockMovementRepository);
-const getHistoryStockUseCase = new GetHistoryStockUseCase(stockMovementRepository);
-const deleteHistoryStockByIdUseCase = new DeleteHistoryStockByIdUseCase(stockMovementRepository);
+
 
 export const useStockMovement = () => {
+  const db = useDatabase();
+  const stockMovementRepository = new SQLiteStockMovementRepository(db);
+  const createStockMovementUseCase = new CreateStockMovementUseCase(stockMovementRepository);
+  const getHistoryStockUseCase = new GetHistoryStockUseCase(stockMovementRepository);
+  const deleteHistoryStockByIdUseCase = new DeleteHistoryStockByIdUseCase(stockMovementRepository);
   const [stock, setStock] = useState<StockMovement[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

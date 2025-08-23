@@ -6,6 +6,8 @@ import React from "react";
 import { Image, View } from "react-native";
 import { CreateEntryStockProductScreen } from "./CreateEntryStockProductScreen";
 import { CreateExitStockProductScreen } from "./CreateExitStockProductScreen";
+import { ListOfProductsMinimumStockScreen } from "./ListOfProductsMinimumStockScreen";
+import { MainHomeScreen } from "./MainHomeScreen";
 import { ProductCreateScreen } from "./ProductCreateScreen";
 import { ProductsListScreen } from "./ProductListScreen";
 import { StockListScreen } from "./StockListScreen";
@@ -26,6 +28,11 @@ function CustomDrawerContent(props: any) {
           style={{ width: 120, height: 120, resizeMode: "contain" }}
         />
       </View>
+      <DrawerItem
+        labelStyle={{ fontSize: 17, fontWeight: "bold" }}
+        label="Home"
+        onPress={() => props.navigation.navigate("MainHomeScreen")}
+      />
       <DrawerItem
         labelStyle={{ fontSize: 17, fontWeight: "bold" }}
         label="Entrada de produtos"
@@ -51,6 +58,11 @@ function CustomDrawerContent(props: any) {
         label="Estoque detalhado"
         onPress={() => props.navigation.navigate("StockListScreen")}
       />
+      <DrawerItem
+        labelStyle={{ fontSize: 17, fontWeight: "bold" }}
+        label="Lista de compras"
+        onPress={() => props.navigation.navigate("ListOfProductsMinimumStockScreen")}
+      />
     </DrawerContentScrollView>
   );
 }
@@ -60,6 +72,7 @@ export default function HomeScreen() {
 
   return (
     <Drawer.Navigator
+      initialRouteName="MainHomeScreen"
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
         headerShown: true,
@@ -70,6 +83,19 @@ export default function HomeScreen() {
         drawerPosition: "right",
       }}
     >
+      <Drawer.Screen 
+        name="MainHomeScreen" 
+        component={MainHomeScreen} 
+        options={{
+        headerTitle: () => (
+          <Image
+            source={require("../../../assets/LogoPinguim.png")}
+            style={{ marginLeft: 14, width: 120, height: 40, resizeMode: "contain" }}
+          />
+        ),
+          headerTitleAlign: "left",
+        }}
+      />
       <Drawer.Screen 
         name="CreateEntryStockProductScreen" 
         component={CreateEntryStockProductScreen} 
@@ -94,6 +120,11 @@ export default function HomeScreen() {
         name="StockListScreen" 
         component={StockListScreen} 
         options={{ title: "Controle de Estoque" }} 
+      />
+      <Drawer.Screen 
+        name="ListOfProductsMinimumStockScreen" 
+        component={ListOfProductsMinimumStockScreen} 
+        options={{ title: "Lista de compras" }} 
       />
     </Drawer.Navigator>
   );

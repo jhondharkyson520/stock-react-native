@@ -1,4 +1,5 @@
 
+import { useDatabase } from "@/_src/data/db/DataBaseContext";
 import { SQLiteProductRepository } from "@/_src/data/repositories/sqliteProductRepository";
 import { Product } from "@/_src/domain/models/Products";
 import { CreateProductUseCase } from "@/_src/usecases/product/CreateProductUseCase";
@@ -8,20 +9,24 @@ import { GetProductByBarCodeUseCase } from "@/_src/usecases/product/GetProductBy
 import { GetProductByIdUseCase } from "@/_src/usecases/product/GetProductByIdUseCase";
 import { GetProductsUseCase } from "@/_src/usecases/product/GetProductsUseCase";
 import { IncreaseQtdProductUseCase } from "@/_src/usecases/product/IncreaseQtdProductUseCase";
+import { ListOfProductsOfQtdMinimumStockUseCase } from "@/_src/usecases/product/ListOfProductsOfQtdMinimumStockUseCase";
 import { UpdateProductUseCase } from "@/_src/usecases/product/UpdateProductUseCase";
 import { useCallback, useState } from "react";
 
-const productRepository = new SQLiteProductRepository();
-const createProductUseCase = new CreateProductUseCase(productRepository);
-const getProductsUseCase = new GetProductsUseCase(productRepository);
-const deleteProductUseCase = new DeleteProductsUseCase(productRepository);
-const updateProductUseCase = new UpdateProductUseCase(productRepository);
-const increaseQtdProductUseCase = new IncreaseQtdProductUseCase(productRepository);
-const decreaseQtdProductUseCase = new DecreaseQtdProductUseCase(productRepository);
-const getProductByIdUseCase = new GetProductByIdUseCase(productRepository);
-const getProductByBarCodeUseCase = new GetProductByBarCodeUseCase(productRepository)
+
 
 export const useProducts = () => {
+  const db = useDatabase();
+  const productRepository = new SQLiteProductRepository(db);
+  const createProductUseCase = new CreateProductUseCase(productRepository);
+  const getProductsUseCase = new GetProductsUseCase(productRepository);
+  const deleteProductUseCase = new DeleteProductsUseCase(productRepository);
+  const updateProductUseCase = new UpdateProductUseCase(productRepository);
+  const increaseQtdProductUseCase = new IncreaseQtdProductUseCase(productRepository);
+  const decreaseQtdProductUseCase = new DecreaseQtdProductUseCase(productRepository);
+  const getProductByIdUseCase = new GetProductByIdUseCase(productRepository);
+  const getProductByBarCodeUseCase = new GetProductByBarCodeUseCase(productRepository);
+  const listOfProductsOfQtdMinimumStockUseCase = new ListOfProductsOfQtdMinimumStockUseCase(productRepository);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -96,6 +101,20 @@ export const useProducts = () => {
     }
   };
 
+  const minimumStockListUseProducts = useCallback(async () => {
+     try {
+      setLoading(true);
+      const fetchedProducts = await listOfProductsOfQtdMinimumStockUseCase.execute();
+      setProducts(fetchedProducts);   
+      setError(null);      
+    } catch (err) {
+      console.error(err);
+      setError("Failed to fetch products");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return {
     products,
     loading,
@@ -108,6 +127,8 @@ export const useProducts = () => {
     productByBarCodeUseProducts,
     handleDumpProductsUseProducts,
     handleIncreaseQtdProductUseProducts,
-    handleDecreaseQtdProductUseProducts
+    handleDecreaseQtdProductUseProducts,
+    minimumStockListUseProducts
   };
-};
+}
+

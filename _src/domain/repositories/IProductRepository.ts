@@ -7,7 +7,8 @@ export interface IProductRepository {
     getByBarCodeProduct(code: string): Promise<Product | null>;
     updateProduct(product: Product): Promise<void>;
     deleteProduct(id: string): Promise<void>;
-
     findByCode(code: string): Promise<Product | null>;
     updateQuantity(code: string, qtd: number): Promise<void>;
+
+    listOfProductsOfQtdMinimumInStock(): Promise<Product[]>;
 }
