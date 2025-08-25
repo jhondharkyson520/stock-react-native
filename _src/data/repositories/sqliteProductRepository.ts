@@ -90,4 +90,11 @@ export class SQLiteProductRepository implements IProductRepository {
         const result = await this.db.getAllAsync<Product>("SELECT * FROM products WHERE qtd < 3");
         return result;
     }
+
+    async totalStockValueAndQuantity(): Promise<{ total_quantity: number; total_value: number }> {
+        const result = await this.db.getFirstAsync<{ total_quantity: number; total_value: number }>(
+        `SELECT SUM(qtd) AS total_quantity, SUM(qtd*value) AS total_value FROM products`
+        );
+        return { total_quantity: result?.total_quantity ?? 0, total_value: result?.total_value ?? 0 };
+    }
 }

@@ -2,10 +2,12 @@
 import { useDatabase } from "@/_src/data/db/DataBaseContext";
 import { SQLiteStockMovementRepository } from "@/_src/data/repositories/sqliteStockMovementRepository";
 import { StockMovement } from "@/_src/domain/models/StockMovement";
+import { CostMonthProductsInRealUseCase } from "@/_src/usecases/stockMovement/CostMonthProductsInRealUseCase";
+import { CostPerYearUseCase } from "@/_src/usecases/stockMovement/CostPerYearUseCase";
 import { CreateStockMovementUseCase } from "@/_src/usecases/stockMovement/CreateStockMovementUseCase";
 import { DeleteHistoryStockByIdUseCase } from "@/_src/usecases/stockMovement/DeleteHistoryStockByIdUseCase";
 import { GetHistoryStockUseCase } from "@/_src/usecases/stockMovement/GetHistoryStockUseCase";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 
 
@@ -15,6 +17,9 @@ export const useStockMovement = () => {
   const createStockMovementUseCase = new CreateStockMovementUseCase(stockMovementRepository);
   const getHistoryStockUseCase = new GetHistoryStockUseCase(stockMovementRepository);
   const deleteHistoryStockByIdUseCase = new DeleteHistoryStockByIdUseCase(stockMovementRepository);
+  const costMonthProductsInRealUseCase = new CostMonthProductsInRealUseCase(stockMovementRepository);
+  const costPerYearUseCase = new CostPerYearUseCase(stockMovementRepository);
+
   const [stock, setStock] = useState<StockMovement[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -57,5 +62,39 @@ export const useStockMovement = () => {
     }
   }
 
-  return {stock, loading, error, handleCreateStockUseStockMovement, handleGetHistoryStockUseStockMovement, handleDeleteHistoryStockUseStockMovement};
+  const costByMonthUseStockMovement = async (month: number, year: number) => {
+    if(!month || !year) throw new Error('Month and Year is required');
+    const totalCost = await costMonthProductsInRealUseCase.execute(month, year);
+    return totalCost;
+  }
+
+  const [firstYear, setFirstYear] = useState<number | null>(null);
+
+  const fetchFirstYear = async () => {
+    const year = await stockMovementRepository.getFirstYear();
+    setFirstYear(year);
+  };
+
+  const costPerYearUseStockMovement = async (year: number) => {
+    if(!year) throw new Error('Year is required to cost per year use stocks');
+    const costPerYearResult = await costPerYearUseCase.execute(year);
+    return costPerYearResult;
+  }
+
+  useEffect(() => {
+    fetchFirstYear();
+  }, []);
+
+  return {
+    stock, 
+    loading, 
+    error, 
+    handleCreateStockUseStockMovement, 
+    handleGetHistoryStockUseStockMovement, 
+    handleDeleteHistoryStockUseStockMovement, 
+    costByMonthUseStockMovement, 
+    fetchFirstYear, 
+    firstYear,
+    costPerYearUseStockMovement
+  };
 };

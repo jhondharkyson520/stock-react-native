@@ -11,4 +11,5 @@ export interface IProductRepository {
     updateQuantity(code: string, qtd: number): Promise<void>;
 
     listOfProductsOfQtdMinimumInStock(): Promise<Product[]>;
+    totalStockValueAndQuantity(): Promise<{ total_quantity: number; total_value: number }>;
 }

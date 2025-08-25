@@ -1,5 +1,6 @@
 import * as SQLite from "expo-sqlite";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { Text } from "react-native";
 import { runMigrations } from ".";
 
 type DatabaseContextType = {
@@ -10,23 +11,26 @@ const DatabaseContext = createContext<DatabaseContextType | undefined>(undefined
 
 export const DatabaseProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
+  const [ready, setReady] = useState(false);
 
-  useEffect(() => {
-    const initDb = async () => {
-      try {
-        const database = await SQLite.openDatabaseAsync("app.db");
-        await runMigrations();
-        setDb(database);
-      } catch (error) {
-        console.error("Erro ao inicializar DB:", error);
-      }
-    };
+    useEffect(() => {
+      const initDb = async () => {
+        try {
+          const database = await SQLite.openDatabaseAsync("app.db");
+          await runMigrations();
+          setDb(database);
+          setReady(true);
+        } catch (error) {
+          console.error("Erro ao inicializar DB:", error);
+        }
+      };
+      initDb();
+    }, []);
 
-    initDb();
-  }, []);
+  if (!ready) return <Text>Inicializando banco de dados...</Text>;
 
   return (
-    <DatabaseContext.Provider value={{ db }}>
+    <DatabaseContext.Provider value={{ db: db }}>
       {children}
     </DatabaseContext.Provider>
   );
