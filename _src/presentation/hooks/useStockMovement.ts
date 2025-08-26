@@ -12,8 +12,6 @@ import { ProductsWithoutRecentMovementUseCase } from "@/_src/usecases/stockMovem
 import { RankingProductsInStockUseCase } from "@/_src/usecases/stockMovement/RankingProductsInStockUseCase";
 import { useCallback, useEffect, useState } from "react";
 
-
-
 export const useStockMovement = () => {
   const db = useDatabase();
   const stockMovementRepository = new SQLiteStockMovementRepository(db);
@@ -104,8 +102,6 @@ export const useStockMovement = () => {
     if(!result) throw new Error("Error in loading products without recent movement");
     return result;    
   }
-
-
 
   useEffect(() => {
     fetchFirstYear();

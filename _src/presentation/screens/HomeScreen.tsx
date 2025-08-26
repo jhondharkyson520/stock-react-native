@@ -6,8 +6,8 @@ import React from "react";
 import { Image, View } from "react-native";
 import { CreateEntryStockProductScreen } from "./CreateEntryStockProductScreen";
 import { CreateExitStockProductScreen } from "./CreateExitStockProductScreen";
+import { DashboardScreen } from "./DashboardScreen";
 import { ListOfProductsMinimumStockScreen } from "./ListOfProductsMinimumStockScreen";
-import { MainHomeScreen } from "./MainHomeScreen";
 import { ProductCreateScreen } from "./ProductCreateScreen";
 import { ProductsListScreen } from "./ProductListScreen";
 import { StockListScreen } from "./StockListScreen";
@@ -31,7 +31,7 @@ function CustomDrawerContent(props: any) {
       <DrawerItem
         labelStyle={{ fontSize: 17, fontWeight: "bold" }}
         label="Home"
-        onPress={() => props.navigation.navigate("MainHomeScreen")}
+        onPress={() => props.navigation.navigate("DashboardScreen")}
       />
       <DrawerItem
         labelStyle={{ fontSize: 17, fontWeight: "bold" }}
@@ -72,7 +72,7 @@ export default function HomeScreen() {
 
   return (
     <Drawer.Navigator
-      initialRouteName="MainHomeScreen"
+      initialRouteName="DashboardScreen"
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
         headerShown: true,
@@ -84,8 +84,8 @@ export default function HomeScreen() {
       }}
     >
       <Drawer.Screen 
-        name="MainHomeScreen" 
-        component={MainHomeScreen} 
+        name="DashboardScreen" 
+        component={DashboardScreen} 
         options={{
         headerTitle: () => (
           <Image
