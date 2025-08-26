@@ -10,10 +10,5 @@ export interface IStockMovementRepository {
     costPerYear(year: number): Promise<number>;
     rankingProductsInStock(): Promise<{ product_id: string; name: string; total_added: number }[]>;
     highRotationProducts(): Promise<{ product_id: string; name: string; total_movement: number }[]>;
-
-    productsWithoutRecentMovement(days: number): Promise<{ product_id: string; last_movement: string | null }[]>;
-    movementsByPeriod(startDate: string, endDate: string): Promise<StockMovement[]>;
-    movementsByType(): Promise<{ type: string; total_movements: number; total_quantity: number }[]>;
-    costByMonthYear(): Promise<{ year: string; month: string; total_cost: number }[]>;
-    recentMovements(limit: number): Promise<StockMovement[]>;
+    productsWithoutRecentMovement(): Promise<{ product_id: string; name: string; last_movement: string | null }[]>;
 }

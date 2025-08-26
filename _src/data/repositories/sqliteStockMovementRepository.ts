@@ -99,52 +99,15 @@ export class SQLiteStockMovementRepository implements IStockMovementRepository {
     );
   }
 
-  async productsWithoutRecentMovement(days: number = 30): Promise<{ product_id: string; last_movement: string | null }[]> {
+  async productsWithoutRecentMovement(): Promise<{ product_id: string; name: string; last_movement: string | null }[]> {
     return await this.db.getAllAsync(
-      `SELECT product_id, MAX(date_movement) AS last_movement
-       FROM stock_movements
-       GROUP BY product_id
-       HAVING last_movement IS NULL OR last_movement < date('now', ? || ' days')`,
-      [-days]
-    );
-  }
-
-  async movementsByPeriod(startDate: string, endDate: string): Promise<StockMovement[]> {
-    return await this.db.getAllAsync(
-      `SELECT *
-       FROM stock_movements
-       WHERE date_movement BETWEEN ? AND ?
-       ORDER BY date_movement DESC`,
-      [startDate, endDate]
-    );
-  }
-
-  async movementsByType(): Promise<{ type: string; total_movements: number; total_quantity: number }[]> {
-    return await this.db.getAllAsync(
-      `SELECT type, COUNT(*) AS total_movements, SUM(qtd) AS total_quantity
-       FROM stock_movements
-       GROUP BY type`
-    );
-  }
-
-  async costByMonthYear(): Promise<{ year: string; month: string; total_cost: number }[]> {
-    return await this.db.getAllAsync(
-      `SELECT strftime('%Y', date_movement) AS year,
-              strftime('%m', date_movement) AS month,
-              SUM(cost) AS total_cost
-       FROM stock_movements
-       GROUP BY year, month
-       ORDER BY year, month`
-    );
-  }
-
-  async recentMovements(limit: number = 10): Promise<StockMovement[]> {
-    return await this.db.getAllAsync(
-      `SELECT *
-       FROM stock_movements
-       ORDER BY date_movement DESC
-       LIMIT ?`,
-      [limit]
+      `SELECT p.id AS product_id, 
+      p.name, 
+      MAX(sm.date_movement) AS last_movement
+      FROM products p
+      LEFT JOIN stock_movements sm ON sm.product_id = p.id
+      GROUP BY p.id, p.name
+      HAVING last_movement IS NULL OR last_movement < date('now', '-30 days')`
     );
   }
 }

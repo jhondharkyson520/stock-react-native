@@ -5,7 +5,15 @@ import { Button, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useStockMovement } from "../hooks/useStockMovement";
 
 export function MainHomeScreen() {
-  const { costByMonthUseStockMovement, firstYear, costPerYearUseStockMovement, rankingProductsInStockUseStockMovement, highRotationProductsUseStockMovement } = useStockMovement();
+  const { 
+    costByMonthUseStockMovement, 
+    firstYear, 
+    costPerYearUseStockMovement, 
+    rankingProductsInStockUseStockMovement, 
+    highRotationProductsUseStockMovement,
+    productsWithoutRecentMovementUseStockMovement
+  } = useStockMovement();
+  
   const [month, setMonth] = useState<number>(new Date().getMonth() + 1);
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [monthlyCost, setMonthlyCost] = useState<number | null>(null);
@@ -17,6 +25,8 @@ export function MainHomeScreen() {
   const [loadingRanking, setLoadingRanking] = useState(false);
   const [loadingHighRotation, setLoadingHighRotation] = useState(false);
   const [highRotationProducts, setHighRotationProducts] = useState<{ product_id: string; name: string; total_movement: number }[]>([]);
+  const [productsWithoutRecentMovement, setProductsWithoutRecentMovement] = useState<{ product_id: string; name: string; last_movement: string | null }[]>([]);
+  const [loadingProductsWithoutRecentMovement, setLoadingProductsWithoutRecentMovement] = useState(false);
 
   const fetchCost = async () => {
     try {
@@ -29,6 +39,21 @@ export function MainHomeScreen() {
       setMonthlyCost(null);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchProductsWithoutRecentMovement = async () => {
+    try {
+      setLoadingProductsWithoutRecentMovement(true);
+      const result = await productsWithoutRecentMovementUseStockMovement();
+      //console.log("Produtos sem movimento recente:", result);
+      setProductsWithoutRecentMovement(result);
+      setError(null);
+    } catch (e: any) {
+      setError(e.message || "Erro ao buscar produtos com movimento recente");
+      setProductsWithoutRecentMovement([]);
+    } finally {
+      setLoadingProductsWithoutRecentMovement(false);
     }
   };
 
@@ -80,11 +105,12 @@ export function MainHomeScreen() {
       fetchCostPerYear();
       fetchRankingProductsInStock();
       fetchHighRotationProducts();
+      fetchProductsWithoutRecentMovement();
     }, [month, year])
   );
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 50 }}>
       <Text style={styles.title}>Bem-vindo ao Sistema de Estoque</Text>
       <Text style={styles.subtitle}>Selecione o mês e ano para ver o custo total:</Text>
 
@@ -158,6 +184,20 @@ export function MainHomeScreen() {
         </View>
       )}
 
+      <View style={{ marginTop: 20 }}>
+        <Text  style={styles.cost}>Produtos sem movimentação recente:</Text>
+        {loadingProductsWithoutRecentMovement && <Text>Carregando...</Text>}
+        {!loadingProductsWithoutRecentMovement && (
+          <>
+            {productsWithoutRecentMovement.length === 0 && <Text>Nenhum produto</Text>}
+            {productsWithoutRecentMovement.map((item, index) => (
+              <Text key={index} style={styles.cost}>
+                {item.name} - última movimentação: {item.last_movement ?? "Nunca"}
+              </Text>
+            ))}
+          </>
+        )}
+      </View>
     </ScrollView>
   );
 }
