@@ -11,10 +11,11 @@ export class SQLiteProductRepository implements IProductRepository {
         }
         this.db = db;
     }
-    async createProduct(product: Omit<Product, "id">): Promise<Product> {
-        const result = await this.db.runAsync(
-            `INSERT INTO products (name, code, description, qtd, value, image) VALUES (?, ?, ?, ?, ?, ?)`,
+    async createProduct(product: Product): Promise<Product> {
+        await this.db.runAsync(
+            `INSERT INTO products (id, name, code, description, qtd, value, image) VALUES (?, ?, ?, ?, ?, ?, ?)`,
             [
+                product.id,
                 product.name,
                 product.code,
                 product.description,
@@ -24,11 +25,9 @@ export class SQLiteProductRepository implements IProductRepository {
             ]
         );
 
-        if (result.lastInsertRowId) {
-            return { id: String(result.lastInsertRowId), ...product };
+        return {
+            ...product
         }
-
-        throw new Error("Failed to create product.");
     }
 
     async getAllProducts(): Promise<Product[]> {

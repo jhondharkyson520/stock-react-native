@@ -31,7 +31,7 @@ export const useProducts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const handleCreateProductUseProducts = async (product: Omit<Product, "id">) => {
+  const handleCreateProductUseProducts = async (product: Product) => {
     try {
       await createProductUseCase.execute(product);
       setProducts([]);

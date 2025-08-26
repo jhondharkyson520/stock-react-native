@@ -1,7 +1,19 @@
+import * as FileSystem from 'expo-file-system';
 import * as SQLite from "expo-sqlite";
 
 const DB_NAME = "app.db";
 let db: SQLite.SQLiteDatabase | null = null;
+
+const DB_PATH = `${FileSystem.documentDirectory}SQLite/${DB_NAME}`;
+
+export async function resetDatabase() {
+  try {
+    await FileSystem.deleteAsync(DB_PATH, { idempotent: true });
+    console.log("Database deleted!");
+  } catch (error) {
+    console.error("Error deleting database:", error);
+  }
+}
 
 export async function getDB(): Promise<SQLite.SQLiteDatabase> {
   if (db) return db;
@@ -14,7 +26,7 @@ export async function runMigrations(): Promise<void> {
   const statements = [
     `PRAGMA journal_mode = WAL;`,
     `CREATE TABLE IF NOT EXISTS products (
-       id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+       id TEXT PRIMARY KEY NOT NULL,
        name TEXT NOT NULL,
        code TEXT NOT NULL,
        description TEXT,

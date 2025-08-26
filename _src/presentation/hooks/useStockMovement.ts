@@ -7,6 +7,8 @@ import { CostPerYearUseCase } from "@/_src/usecases/stockMovement/CostPerYearUse
 import { CreateStockMovementUseCase } from "@/_src/usecases/stockMovement/CreateStockMovementUseCase";
 import { DeleteHistoryStockByIdUseCase } from "@/_src/usecases/stockMovement/DeleteHistoryStockByIdUseCase";
 import { GetHistoryStockUseCase } from "@/_src/usecases/stockMovement/GetHistoryStockUseCase";
+import { HighRotationProductsUseCase } from "@/_src/usecases/stockMovement/HighRotationProductsUseCase";
+import { RankingProductsInStockUseCase } from "@/_src/usecases/stockMovement/RankingProductsInStockUseCase";
 import { useCallback, useEffect, useState } from "react";
 
 
@@ -19,6 +21,8 @@ export const useStockMovement = () => {
   const deleteHistoryStockByIdUseCase = new DeleteHistoryStockByIdUseCase(stockMovementRepository);
   const costMonthProductsInRealUseCase = new CostMonthProductsInRealUseCase(stockMovementRepository);
   const costPerYearUseCase = new CostPerYearUseCase(stockMovementRepository);
+  const rankingProductsInStockUseCase = new RankingProductsInStockUseCase(stockMovementRepository);
+  const highRotationProductsUseCase = new HighRotationProductsUseCase(stockMovementRepository);
 
   const [stock, setStock] = useState<StockMovement[]>([]);
   const [loading, setLoading] = useState(true);
@@ -81,6 +85,18 @@ export const useStockMovement = () => {
     return costPerYearResult;
   }
 
+  const rankingProductsInStockUseStockMovement = async () => {
+    const result = await rankingProductsInStockUseCase.execute();
+    if(!result) throw new Error("Error in loading ranking of products in Stock");
+    return result;    
+  }
+
+  const highRotationProductsUseStockMovement = async () => {
+    const result = await highRotationProductsUseCase.execute();
+    if(!result) throw new Error("Error in loading products high rotation in Stock");
+    return result;    
+  }
+
   useEffect(() => {
     fetchFirstYear();
   }, []);
@@ -95,6 +111,8 @@ export const useStockMovement = () => {
     costByMonthUseStockMovement, 
     fetchFirstYear, 
     firstYear,
-    costPerYearUseStockMovement
+    costPerYearUseStockMovement,
+    rankingProductsInStockUseStockMovement,
+    highRotationProductsUseStockMovement
   };
 };

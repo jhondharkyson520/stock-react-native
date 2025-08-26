@@ -5,6 +5,7 @@ import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useRef, useState } from "react";
 import { Alert, Image, ScrollView, Text, View } from "react-native";
+import v4 from "react-native-uuid";
 import { Container } from "../screens/style/container";
 import { shadowStyle } from "../screens/style/shadowStyle";
 import { InputBarCode } from "./InputBarCode";
@@ -17,6 +18,7 @@ interface ProductFormProps {
 
 export function ProductForm({ onCreate, loading }: ProductFormProps) {
   const [formData, setFormData] = useState({
+    id: '',
     name: '',
     code: '',
     description: '',
@@ -41,6 +43,7 @@ export function ProductForm({ onCreate, loading }: ProductFormProps) {
       const imageToSave = formData.image && formData.image !== "" ? formData.image : "blank";
       const newProduct: Product = {
         ...formData,
+        id: v4.v4(),
         value: Number(formData.value) || 0,
         qtd: formData.qtd,
         image: imageToSave,
@@ -48,6 +51,7 @@ export function ProductForm({ onCreate, loading }: ProductFormProps) {
       await onCreate(newProduct);
       Alert.alert("Sucesso", "Produto salvo com sucesso");
       setFormData({
+        id: '',
         name: "",
         code: "",
         description: "",

@@ -19,7 +19,21 @@ export type RootStackParamList = {
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
+
+
 export default function App() {
+
+  // zerar banco de dados:
+  /* useEffect(() => {
+    const init = async () => {
+      await resetDatabase();
+      const db = await getDB();
+      await runMigrations();
+      console.log("Banco reiniciado e pronto!");
+    };
+    init();
+  }, []); */
+
   return (
     <DatabaseProvider>
       <NavigationContainer>

@@ -8,8 +8,9 @@ export interface IStockMovementRepository {
     getFirstYear(): Promise<number | null>;
 
     costPerYear(year: number): Promise<number>;
-    rankingProductsInStock(): Promise<{ product_id: string; total_added: number }[]>;
-    highRotationProducts(): Promise<{ product_id: string; total_movement: number }[]>;
+    rankingProductsInStock(): Promise<{ product_id: string; name: string; total_added: number }[]>;
+    highRotationProducts(): Promise<{ product_id: string; name: string; total_movement: number }[]>;
+
     productsWithoutRecentMovement(days: number): Promise<{ product_id: string; last_movement: string | null }[]>;
     movementsByPeriod(startDate: string, endDate: string): Promise<StockMovement[]>;
     movementsByType(): Promise<{ type: string; total_movements: number; total_quantity: number }[]>;

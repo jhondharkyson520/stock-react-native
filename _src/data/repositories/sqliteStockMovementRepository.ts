@@ -77,22 +77,25 @@ export class SQLiteStockMovementRepository implements IStockMovementRepository {
     return result?.total_cost ?? 0;
   }
 
-  async rankingProductsInStock(): Promise<{ product_id: string; total_added: number }[]> {
+  async rankingProductsInStock(): Promise<{ product_id: string; name: string; total_added: number }[]> {
     return await this.db.getAllAsync(
-      `SELECT product_id, SUM(qtd) AS total_added
-       FROM stock_movements
-       WHERE type = 'in'
-       GROUP BY product_id
-       ORDER BY total_added DESC`
+      `SELECT p.id AS product_id, p.name, SUM(sm.qtd) AS total_added
+     FROM stock_movements sm
+     JOIN products p ON LOWER(TRIM(sm.product_id)) = LOWER(TRIM(p.id))
+     WHERE sm.type = 'entrada'
+     GROUP BY sm.product_id
+     ORDER BY total_added DESC
+     LIMIT 10`
     );
   }
 
-  async highRotationProducts(): Promise<{ product_id: string; total_movement: number }[]> {
+  async highRotationProducts(): Promise<{ product_id: string; name: string; total_movement: number }[]> {
     return await this.db.getAllAsync(
-      `SELECT product_id, SUM(qtd) AS total_movement
-       FROM stock_movements
-       GROUP BY product_id
-       ORDER BY total_movement DESC`
+      `SELECT p.id AS product_id, p.name, SUM(sm.qtd) AS total_movement
+      FROM stock_movements sm
+      JOIN products p ON sm.product_id = p.id
+      GROUP BY sm.product_id
+      ORDER BY total_movement DESC`
     );
   }
 
