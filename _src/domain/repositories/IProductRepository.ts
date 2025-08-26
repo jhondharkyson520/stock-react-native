@@ -9,6 +9,7 @@ export interface IProductRepository {
     deleteProduct(id: string): Promise<void>;
     findByCode(code: string): Promise<Product | null>;
     updateQuantity(code: string, qtd: number): Promise<void>;
+    updateQuantityAndValue(code: string, qtd: number, value: number): Promise<void>;
 
     listOfProductsOfQtdMinimumInStock(): Promise<Product[]>;
     totalStockValueAndQuantity(): Promise<{ total_quantity: number; total_value: number }>;

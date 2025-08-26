@@ -14,7 +14,9 @@ export type RootStackParamList = {
   StockExitScreen: undefined;
   StockListScreen: undefined;
   ListOfProductsMinimumStockScreen: undefined;
-  DashboardScreen: undefined
+  DashboardScreen: undefined;
+  CreateEntryStockProductScreen: undefined;
+  CreateExitStockProductScreen: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();

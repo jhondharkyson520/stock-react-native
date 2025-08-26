@@ -9,6 +9,7 @@ import { CreateExitStockProductScreen } from "./CreateExitStockProductScreen";
 import { DashboardScreen } from "./DashboardScreen";
 import { ListOfProductsMinimumStockScreen } from "./ListOfProductsMinimumStockScreen";
 import { ProductCreateScreen } from "./ProductCreateScreen";
+import { ProductEditScreen } from "./ProductEditScreen";
 import { ProductsListScreen } from "./ProductListScreen";
 import { StockListScreen } from "./StockListScreen";
 
@@ -35,21 +36,6 @@ function CustomDrawerContent(props: any) {
       />
       <DrawerItem
         labelStyle={{ fontSize: 17, fontWeight: "bold" }}
-        label="Entrada de produtos"
-        onPress={() => props.navigation.navigate("CreateEntryStockProductScreen")}
-      />
-      <DrawerItem
-        labelStyle={{ fontSize: 17, fontWeight: "bold" }}
-        label="Saída de produtos"
-        onPress={() => props.navigation.navigate("CreateExitStockProductScreen")}
-      />
-      <DrawerItem
-        labelStyle={{ fontSize: 17, fontWeight: "bold" }}
-        label="Novo Produto"
-        onPress={() => props.navigation.navigate("ProductCreateScreen")}
-      />
-      <DrawerItem
-        labelStyle={{ fontSize: 17, fontWeight: "bold" }}
         label="Lista de produtos"
         onPress={() => props.navigation.navigate("ProductsListScreen")}
       />      
@@ -57,11 +43,6 @@ function CustomDrawerContent(props: any) {
         labelStyle={{ fontSize: 17, fontWeight: "bold" }}
         label="Estoque detalhado"
         onPress={() => props.navigation.navigate("StockListScreen")}
-      />
-      <DrawerItem
-        labelStyle={{ fontSize: 17, fontWeight: "bold" }}
-        label="Lista de compras"
-        onPress={() => props.navigation.navigate("ListOfProductsMinimumStockScreen")}
       />
     </DrawerContentScrollView>
   );
@@ -95,7 +76,18 @@ export default function HomeScreen() {
         ),
           headerTitleAlign: "left",
         }}
+      />      
+      <Drawer.Screen 
+        name="ProductsListScreen" 
+        component={ProductsListScreen} 
+        options={{ title: "Lista de Produtos" }} 
       />
+      <Drawer.Screen 
+        name="StockListScreen" 
+        component={StockListScreen} 
+        options={{ title: "Controle de Estoque" }} 
+      />
+
       <Drawer.Screen 
         name="CreateEntryStockProductScreen" 
         component={CreateEntryStockProductScreen} 
@@ -111,21 +103,18 @@ export default function HomeScreen() {
         component={ProductCreateScreen} 
         options={{ title: "Novo Produto" }} 
       />
-      <Drawer.Screen 
-        name="ProductsListScreen" 
-        component={ProductsListScreen} 
-        options={{ title: "Produtos Cadastrados" }} 
-      />      
-      <Drawer.Screen 
-        name="StockListScreen" 
-        component={StockListScreen} 
-        options={{ title: "Controle de Estoque" }} 
-      />
+
       <Drawer.Screen 
         name="ListOfProductsMinimumStockScreen" 
         component={ListOfProductsMinimumStockScreen} 
         options={{ title: "Lista de compras" }} 
       />
+      <Drawer.Screen 
+        name="ProductEditScreen" 
+        component={ProductEditScreen} 
+        options={{ title: "Editar produto" }} 
+      />
+
     </Drawer.Navigator>
   );
 }

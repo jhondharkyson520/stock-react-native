@@ -1,5 +1,4 @@
 import { Product } from "@/_src/domain/models/Products";
-import { formatToCurrencyInput } from "@/_src/utils/maskValue";
 import { useCameraPermissions } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
@@ -9,7 +8,7 @@ import v4 from "react-native-uuid";
 import { Container } from "../screens/style/container";
 import { shadowStyle } from "../screens/style/shadowStyle";
 import { InputBarCode } from "./InputBarCode";
-import { BorderFromImage, ButtonLarge, ContainerImageProduct, ContainerViewNumbers, InputText, InputTextValue, LabelText, LabelTextButton } from "./style/ProductFormStyle";
+import { BorderFromImage, ButtonLarge, ContainerImageProduct, InputText, LabelTextButton } from "./style/ProductFormStyle";
 
 interface ProductFormProps {
   onCreate: (product: Product) => Promise<void>;
@@ -44,7 +43,7 @@ export function ProductForm({ onCreate, loading }: ProductFormProps) {
       const newProduct: Product = {
         ...formData,
         id: v4.v4(),
-        value: Number(formData.value) || 0,
+        value: 0,
         qtd: formData.qtd,
         image: imageToSave,
       };
@@ -136,20 +135,6 @@ export function ProductForm({ onCreate, loading }: ProductFormProps) {
           value={formData.description}
           onChangeText={(text) => handleChange("description", text)}
         />
-
-        <ContainerViewNumbers>
-          <LabelText>Valor R$:</LabelText>
-          <InputTextValue
-            style={shadowStyle.shadow}
-            placeholderTextColor="#000000"
-            keyboardType="numeric"
-            value={formatToCurrencyInput(formData.value).display}
-            onChangeText={(text) => {
-              const { raw } = formatToCurrencyInput(text);
-              handleChange("value", raw);
-            }}
-          />
-        </ContainerViewNumbers>
 
         <InputBarCode
           onBarCodeScanned={(text) => handleChange("code", text)}

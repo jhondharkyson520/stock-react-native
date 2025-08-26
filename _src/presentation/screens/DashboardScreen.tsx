@@ -1,5 +1,5 @@
 import { Picker } from "@react-native-picker/picker";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import React, { useCallback, useEffect, useState } from "react";
 import {
     ActivityIndicator,
@@ -7,11 +7,14 @@ import {
     ScrollView,
     StyleSheet,
     Text,
+    TouchableOpacity,
     useWindowDimensions,
     View
 } from "react-native";
 import { BarChart, LineChart } from "react-native-chart-kit";
 
+import { RootStackParamList } from "@/App";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useStockMovement } from "../hooks/useStockMovement";
 
 
@@ -22,6 +25,11 @@ interface Product {
     total_movement?: number;
     last_movement?: string | null;
 }
+
+type DashboardNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "DashboardScreen"
+>;
 
 export function DashboardScreen() {
     const {
@@ -47,6 +55,7 @@ export function DashboardScreen() {
 
     const [loading, setLoading] = useState(false);
     const [monthlyChartData, setMonthlyChartData] = useState<any>(null);
+    const navigation = useNavigation<DashboardNavigationProp>();
 
     const fetchMainData = async () => {
         setLoading(true);
@@ -99,9 +108,42 @@ export function DashboardScreen() {
     const formatCurrency = (value: number | null) =>
         value !== null ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value) : "-";
 
+    
+
     return (
         <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 50 }}>
             <Text style={styles.title}>Dashboard do Estoque</Text>
+
+            {/* Botões de Navegação */}
+            <View style={styles.buttonRow}>
+                <TouchableOpacity
+                    style={[styles.buttonCard, { backgroundColor: "#1a73e8" }]}
+                    onPress={() => navigation.navigate("CreateEntryStockProductScreen")}
+                >
+                    <Text style={styles.buttonText}>Entrada</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={[styles.buttonCard, { backgroundColor: "#34a853" }]}
+                    onPress={() => navigation.navigate("CreateExitStockProductScreen")}
+                >
+                    <Text style={styles.buttonText}>Saída</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={[styles.buttonCard, { backgroundColor: "#fbbc05" }]}
+                    onPress={() => navigation.navigate("ProductCreateScreen")}
+                >
+                    <Text style={styles.buttonText}>Novo Produto</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={[styles.buttonCard, { backgroundColor: "#ea4335" }]}
+                    onPress={() => navigation.navigate("ListOfProductsMinimumStockScreen")}
+                >
+                    <Text style={styles.buttonText}>Lista de Compras</Text>
+                </TouchableOpacity>
+            </View>
 
             <View style={styles.pickerRow}>
                 <View style={styles.pickerColumn}>
@@ -230,5 +272,27 @@ const styles = StyleSheet.create({
     },
     picker: {
         width: '100%',
+    },
+    buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginVertical: 15,
+    flexWrap: "wrap", // permite quebrar a linha se não couber
+    },
+    buttonCard: {
+    flex: 1,
+    marginHorizontal: 5,
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    minWidth: 80,
+    marginBottom: 10,
+    },
+    buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 14,
+    textAlign: "center",
     },
 });

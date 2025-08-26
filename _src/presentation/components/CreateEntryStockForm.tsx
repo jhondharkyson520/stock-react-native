@@ -71,7 +71,7 @@ export function CreateEntryStockForm({loading, onCreate}: StockFormProps) {
         }
 
         const movementToSave = { ...formData, id: v4.v4(), product_id: product.id };
-        await handleIncreaseQtdProductUseProducts({ code: formData.product_id, qtd: formData.qtd });
+        await handleIncreaseQtdProductUseProducts({ code: formData.product_id, qtd: formData.qtd, value: formData.cost });
         await onCreate(movementToSave);
         Alert.alert("Sucesso", "Lançamento de entrada feito com sucesso!");
         setFormData({

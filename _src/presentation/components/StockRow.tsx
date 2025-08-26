@@ -1,72 +1,59 @@
 import { StockMovement } from "@/_src/domain/models/StockMovement";
-import { RootStackParamList } from "@/App";
-import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React from "react";
-import { Alert, StyleSheet, Text, View } from "react-native";
-import { shadowStyle } from "../screens/style/shadowStyle";
-import { ButtonLarge, LabelTextButton } from "./style/ProductFormStyle";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface StockRowProps {
   stock: StockMovement;
   onDelete: (id: string) => void;
+  productName: string;
 }
 
-type StockRowScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  "StockListScreen"
->;
-
-
-export function StockRow({stock, onDelete}: StockRowProps) {
-  const navigation = useNavigation<StockRowScreenNavigationProp>();
-
+export function StockRow({ stock, onDelete, productName }: StockRowProps) {
   const deleteHistoryStock = async () => {
-    if(!stock.id) return;
+    if (!stock.id) return;
     try {
       await onDelete(stock.id);
-      Alert.alert('Success!', 'Product deleted success');
-    } catch (err) {
-      Alert.alert('Error!', 'Error delete product');
+      Alert.alert("Success", "Stock movement deleted successfully");
+    } catch (err: any) {
+      Alert.alert("Error", err.message ?? "Failed to delete stock movement");
     }
   };
 
+  const formattedDate = new Date(stock.date_movement).toLocaleDateString("en-US", {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+  });
 
   return (
-    <View style={styles.container}>
-      <View style={styles.info}>
-        <Text style={styles.name}>id: {stock.id}</Text>
-        <Text style={styles.name}>product_id: {stock.product_id}</Text> 
-        <Text style={styles.name}>type: {stock.type}</Text>
-        <Text style={styles.name}>qtd: {stock.qtd}</Text>
-        <Text style={styles.name}>cost: {stock.cost}</Text>
-        <Text style={styles.name}>date_movement: {stock.date_movement}</Text>
-        <ButtonLarge style={shadowStyle.shadow} onPress={deleteHistoryStock}>
-          <LabelTextButton>Deletar</LabelTextButton>
-        </ButtonLarge> 
+    <View style={styles.card}>
+      <View style={styles.header}>
+        <Text style={styles.productName}>{productName}</Text>
+        <Text style={[styles.type, stock.type === "entrada" ? styles.in : styles.out]}>{stock.type}</Text>
       </View>
+
+      <View style={styles.info}>
+        <Text style={styles.detail}>Quantidade: {stock.qtd}</Text>
+        <Text style={styles.detail}>Valor: ${Number(stock.cost).toFixed(2)}</Text>
+        <Text style={styles.detail}>Data: {formattedDate}</Text>
+      </View>
+
+      <TouchableOpacity style={styles.deleteButton} onPress={deleteHistoryStock}>
+        <Text style={styles.buttonText}>Cancelar lançamento</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-  },
-  info: {
-    flex: 1,
-  },
-  name: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  email: {
-    fontSize: 14,
-    color: "#666",
-  },
+  card: { backgroundColor: "#FFF", borderRadius: 16, padding: 16, marginHorizontal: 16, marginBottom: 12, shadowColor: "#000", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 3 },
+  header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8 },
+  productName: { fontSize: 18, fontWeight: "700", color: "#111827" },
+  type: { fontSize: 14, fontWeight: "600", paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, color: "#FFF", textTransform: "uppercase" },
+  in: { backgroundColor: "#10B981" },
+  out: { backgroundColor: "#EF4444" },
+  info: { marginBottom: 12 },
+  detail: { fontSize: 14, color: "#4B5563", marginBottom: 4 },
+  deleteButton: { backgroundColor: "#F87171", borderRadius: 10, paddingVertical: 10, alignItems: "center" },
+  buttonText: { color: "#FFF", fontSize: 16, fontWeight: "600" },
 });

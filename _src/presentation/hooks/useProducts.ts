@@ -66,11 +66,11 @@ export const useProducts = () => {
     await updateProductUseCase.execute(product);
   };
 
-  const handleIncreaseQtdProductUseProducts = async (product: { code?: string; qtd?: number }) => {
-    if (!product.code || !product.qtd) {
+  const handleIncreaseQtdProductUseProducts = async (product: { code?: string; qtd?: number, value?: number }) => {
+    if (!product.code || !product.qtd || !product.value) {
       throw new Error("Code and QTD required");
     }
-    await increaseQtdProductUseCase.execute(product.code, product.qtd);
+    await increaseQtdProductUseCase.execute(product.code, product.qtd, product.value);
   };
 
   const handleDecreaseQtdProductUseProducts = async (product: { code?: string; qtd?: number }) => {

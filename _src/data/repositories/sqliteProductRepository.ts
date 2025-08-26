@@ -77,6 +77,10 @@ export class SQLiteProductRepository implements IProductRepository {
         return result ? (result as Product) : null;
     }
 
+    async updateQuantityAndValue(code: string, qtd: number, value: number): Promise<void> {
+        await this.db.runAsync("UPDATE products SET qtd = ?, value = ? WHERE code = ?", [qtd, value, code]);
+    }
+
     async updateQuantity(code: string, qtd: number): Promise<void> {
         await this.db.runAsync("UPDATE products SET qtd = ? WHERE code = ?", [qtd, code]);
     }
