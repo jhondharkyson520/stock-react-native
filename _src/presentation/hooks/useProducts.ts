@@ -73,7 +73,7 @@ export const useProducts = () => {
     await increaseQtdProductUseCase.execute(product.code, product.qtd, product.value);
   };
 
-  const handleDecreaseQtdProductUseProducts = async (product: { code?: string; qtd?: number }) => {
+  const handleDecreaseQtdProductUseProducts = async (product: { code?: string; qtd?: number; }) => {
     if (!product.code || !product.qtd) {
       throw new Error("Code and QTD required");
     }

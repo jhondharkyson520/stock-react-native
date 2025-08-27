@@ -20,7 +20,6 @@ export function ListOfProductsMinimumStockScreen() {
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
   const navigation = useNavigation<ProductsListScreenNavigationProp>();
 
-  // Inicializa o banco de dados e carrega os produtos
   useEffect(() => {
     const initializeDb = async () => {
       try {
@@ -42,7 +41,6 @@ export function ListOfProductsMinimumStockScreen() {
     return unsubscribe;
   }, [dbReady, navigation]);
 
-  // Carrega os itens marcados do AsyncStorage
   const loadCheckedItems = async () => {
     try {
       const saved = await AsyncStorage.getItem(STORAGE_KEY);
@@ -52,7 +50,6 @@ export function ListOfProductsMinimumStockScreen() {
     }
   };
 
-  // Salva os itens marcados no AsyncStorage
   const saveCheckedItems = async (newCheckedItems: Record<string, boolean>) => {
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newCheckedItems));
@@ -76,6 +73,12 @@ export function ListOfProductsMinimumStockScreen() {
     const isLowStock = item.quantity < 3;
     const checked = checkedItems[item.id] || false;
 
+    const formattedDate = new Date(item.updated_date).toLocaleDateString("pt-BR", {
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
+    });   
+
     return (
       <TouchableOpacity onPress={() => toggleCheck(item.id)} style={[styles.ticket, isLowStock && styles.lowStockTicket]}>
         <View style={styles.row}>
@@ -84,8 +87,8 @@ export function ListOfProductsMinimumStockScreen() {
           </View>
           <View style={[styles.info, checked && styles.disabledInfo]}>
             <Text style={[styles.productName, checked && styles.lineThrough]}>{item.name}</Text>
-            <Text style={[styles.productDetail, checked && styles.lineThrough]}>Quantidade: {item.quantity}</Text>
-            <Text style={[styles.productDetail, checked && styles.lineThrough]}>Última movimentação: {item.last_movement ?? 'Nunca'}</Text>
+            <Text style={[styles.productDetail, checked && styles.lineThrough]}>Quantidade em estoque: {item.qtd}</Text>
+            <Text style={[styles.productDetail, checked && styles.lineThrough]}>Última movimentação: {formattedDate ?? 'Nunca'}</Text>
           </View>
         </View>
       </TouchableOpacity>

@@ -1,59 +1,14 @@
-import { Product } from "@/_src/domain/models/Products";
-import { StockMovement } from "@/_src/domain/models/StockMovement";
 import React from "react";
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-interface StockRowProps {
-  stock: StockMovement;
-  onDelete: (id: string) => void;
+type StockRowProps = {
+  stock: any;
   productName: string;
-  onGetProductId: (id: string) => Promise<Product | null>;
-  onUpdateProduct: (product: { code: string; qtd: number; value: number }) => Promise<void>;
-}
+  onRevert: (movement: any) => void;
+};
 
-export function StockRow({ stock, onDelete, productName, onGetProductId, onUpdateProduct }: StockRowProps) {
-  const deleteHistoryStock = async () => {
-    if (!stock.id) return;
-    try {      
-      const product = await onGetProductId(stock.product_id);
-      console.log(product);
-      
-      if (!product) {
-        Alert.alert("Erro", "Produto não está cadastrado.");
-        return;
-      }
-
-      let newQtd = product.qtd;
-      let newValue = product.value;
-
-      if(stock.type === 'entrada') {
-        newQtd = product.qtd - stock.qtd;
-      } else if( stock.type === 'saida') {
-        newQtd = product.qtd + stock.qtd;
-      }
-
-      if(newQtd < 0) {
-        Alert.alert('Error', 'A quantidade não pode ficar menor que zero após o cancelamento') 
-        return;
-      };
-
-      console.log("Cancelando:", {
-  atual: product.qtd,
-  movimento: stock.qtd,
-  tipo: stock.type,
-  novo: newQtd,
-});
-
-
-      await onUpdateProduct({code: stock.product_id, qtd: newQtd, value: newValue});
-      await onDelete(stock.id);
-      Alert.alert("Success", "Stock movement deleted successfully");
-    } catch (err: any) {
-      Alert.alert("Error", err.message ?? "Failed to delete stock movement");
-    }
-  };
-
-  const formattedDate = new Date(stock.date_movement).toLocaleDateString("en-US", {
+export function StockRow({ stock, productName, onRevert }: StockRowProps) {
+  const formattedDate = new Date(stock.date_movement).toLocaleDateString("pt-BR", {
     month: "short",
     day: "2-digit",
     year: "numeric",
@@ -68,12 +23,12 @@ export function StockRow({ stock, onDelete, productName, onGetProductId, onUpdat
 
       <View style={styles.info}>
         <Text style={styles.detail}>Quantidade: {stock.qtd}</Text>
-        <Text style={styles.detail}>Valor: ${Number(stock.cost).toFixed(2)}</Text>
+        <Text style={styles.detail}>Valor total: {stock.cost.toFixed(2)}</Text>
         <Text style={styles.detail}>Data: {formattedDate}</Text>
       </View>
 
-      <TouchableOpacity style={styles.deleteButton} onPress={deleteHistoryStock}>
-        <Text style={styles.buttonText}>Cancelar lançamento</Text>
+      <TouchableOpacity style={styles.deleteButton} onPress={() => onRevert(stock)}>
+        <Text style={styles.buttonText}>Cancelar movimento</Text>
       </TouchableOpacity>
     </View>
   );

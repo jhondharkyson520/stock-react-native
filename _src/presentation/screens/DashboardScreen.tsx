@@ -114,7 +114,6 @@ export function DashboardScreen() {
         <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 50 }}>
             <Text style={styles.title}>Dashboard do Estoque</Text>
 
-            {/* Botões de Navegação */}
             <View style={styles.buttonRow}>
                 <TouchableOpacity
                     style={[styles.buttonCard, { backgroundColor: "#1a73e8" }]}
