@@ -17,7 +17,7 @@ type StockListScreenNavigationProp = NativeStackNavigationProp<
 
 export function StockListScreen() {
   const { stock, loading, error, handleGetHistoryStockUseStockMovement, handleDeleteHistoryStockUseStockMovement } = useStockMovement();
-  const { productByIdUseProducts } = useProducts();
+  const { productByBarCodeUseProducts, handleIncreaseQtdProductUseProducts} = useProducts();
   const [dbReady, setDbReady] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [productNamesMap, setProductNamesMap] = useState<Record<string, string>>({});
@@ -48,7 +48,7 @@ export function StockListScreen() {
       const map: Record<string, string> = {};
       for (const s of stock) {
         try {
-          const p = await productByIdUseProducts(s.product_id);
+          const p = await productByBarCodeUseProducts(s.product_id);
           map[s.product_id] = p?.name ?? "Produto excluído";
         } catch {
           map[s.product_id] = "Unknown Product";
@@ -99,6 +99,8 @@ export function StockListScreen() {
           <StockRow
             stock={item}
             onDelete={handleDeleteHistoryStockUseStockMovement}
+            onGetProductId={productByBarCodeUseProducts}
+            onUpdateProduct={handleIncreaseQtdProductUseProducts}
             productName={productNamesMap[item.product_id] ?? "Loading..."}
           />
         )}

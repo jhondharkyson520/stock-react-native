@@ -32,7 +32,7 @@ export class SQLiteStockMovementRepository implements IStockMovementRepository {
   }
 
   async getHistoryStock(): Promise<StockMovement[]> {
-    const result = await this.db.getAllAsync(`SELECT id, product_id, type, qtd, cost, date_movement FROM stock_movements`);
+    const result = await this.db.getAllAsync(`SELECT id, product_id, type, qtd, cost, date_movement FROM stock_movements ORDER BY date_movement DESC`);
     const stockMovements: StockMovement[] = result.map(item => item as StockMovement);
     return stockMovements;
   }

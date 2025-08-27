@@ -1,3 +1,4 @@
+import { Product } from "@/_src/domain/models/Products";
 import { StockMovement } from "@/_src/domain/models/StockMovement";
 import React from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -6,12 +7,45 @@ interface StockRowProps {
   stock: StockMovement;
   onDelete: (id: string) => void;
   productName: string;
+  onGetProductId: (id: string) => Promise<Product | null>;
+  onUpdateProduct: (product: { code: string; qtd: number; value: number }) => Promise<void>;
 }
 
-export function StockRow({ stock, onDelete, productName }: StockRowProps) {
+export function StockRow({ stock, onDelete, productName, onGetProductId, onUpdateProduct }: StockRowProps) {
   const deleteHistoryStock = async () => {
     if (!stock.id) return;
-    try {
+    try {      
+      const product = await onGetProductId(stock.product_id);
+      console.log(product);
+      
+      if (!product) {
+        Alert.alert("Erro", "Produto não está cadastrado.");
+        return;
+      }
+
+      let newQtd = product.qtd;
+      let newValue = product.value;
+
+      if(stock.type === 'entrada') {
+        newQtd = product.qtd - stock.qtd;
+      } else if( stock.type === 'saida') {
+        newQtd = product.qtd + stock.qtd;
+      }
+
+      if(newQtd < 0) {
+        Alert.alert('Error', 'A quantidade não pode ficar menor que zero após o cancelamento') 
+        return;
+      };
+
+      console.log("Cancelando:", {
+  atual: product.qtd,
+  movimento: stock.qtd,
+  tipo: stock.type,
+  novo: newQtd,
+});
+
+
+      await onUpdateProduct({code: stock.product_id, qtd: newQtd, value: newValue});
       await onDelete(stock.id);
       Alert.alert("Success", "Stock movement deleted successfully");
     } catch (err: any) {
