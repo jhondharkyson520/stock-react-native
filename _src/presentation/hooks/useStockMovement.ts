@@ -1,5 +1,6 @@
 
-import { useDatabase } from "@/_src/data/db/DataBaseContext";
+
+import { useFirestore } from "@/_src/data/db/DataBaseContext";
 import { SQLiteStockMovementRepository } from "@/_src/data/repositories/sqliteStockMovementRepository";
 import { StockMovement } from "@/_src/domain/models/StockMovement";
 import { CostMonthProductsInRealUseCase } from "@/_src/usecases/stockMovement/CostMonthProductsInRealUseCase";
@@ -7,18 +8,22 @@ import { CostPerYearUseCase } from "@/_src/usecases/stockMovement/CostPerYearUse
 import { CreateStockMovementUseCase } from "@/_src/usecases/stockMovement/CreateStockMovementUseCase";
 import { DeleteHistoryStockByIdUseCase } from "@/_src/usecases/stockMovement/DeleteHistoryStockByIdUseCase";
 import { GetHistoryStockUseCase } from "@/_src/usecases/stockMovement/GetHistoryStockUseCase";
+import { HighRotationProductsUseCase } from "@/_src/usecases/stockMovement/HighRotationProductsUseCase";
+import { ProductsWithoutRecentMovementUseCase } from "@/_src/usecases/stockMovement/ProductsWithoutRecentMovementUseCase";
+import { RankingProductsInStockUseCase } from "@/_src/usecases/stockMovement/RankingProductsInStockUseCase";
 import { useCallback, useEffect, useState } from "react";
 
-
-
 export const useStockMovement = () => {
-  const db = useDatabase();
+  const db = useFirestore();
   const stockMovementRepository = new SQLiteStockMovementRepository(db);
   const createStockMovementUseCase = new CreateStockMovementUseCase(stockMovementRepository);
   const getHistoryStockUseCase = new GetHistoryStockUseCase(stockMovementRepository);
   const deleteHistoryStockByIdUseCase = new DeleteHistoryStockByIdUseCase(stockMovementRepository);
   const costMonthProductsInRealUseCase = new CostMonthProductsInRealUseCase(stockMovementRepository);
   const costPerYearUseCase = new CostPerYearUseCase(stockMovementRepository);
+  const rankingProductsInStockUseCase = new RankingProductsInStockUseCase(stockMovementRepository);
+  const highRotationProductsUseCase = new HighRotationProductsUseCase(stockMovementRepository);
+  const productsWithoutRecentMovementUseCase = new ProductsWithoutRecentMovementUseCase(stockMovementRepository);
 
   const [stock, setStock] = useState<StockMovement[]>([]);
   const [loading, setLoading] = useState(true);
@@ -81,6 +86,24 @@ export const useStockMovement = () => {
     return costPerYearResult;
   }
 
+  const rankingProductsInStockUseStockMovement = async () => {
+    const result = await rankingProductsInStockUseCase.execute();
+    if(!result) throw new Error("Error in loading ranking of products in Stock");
+    return result;    
+  }
+
+  const highRotationProductsUseStockMovement = async () => {
+    const result = await highRotationProductsUseCase.execute();
+    if(!result) throw new Error("Error in loading products high rotation in Stock");
+    return result;    
+  }
+
+  const productsWithoutRecentMovementUseStockMovement = async () => {
+    const result = await productsWithoutRecentMovementUseCase.execute();
+    if(!result) throw new Error("Error in loading products without recent movement");
+    return result;    
+  }
+
   useEffect(() => {
     fetchFirstYear();
   }, []);
@@ -95,6 +118,9 @@ export const useStockMovement = () => {
     costByMonthUseStockMovement, 
     fetchFirstYear, 
     firstYear,
-    costPerYearUseStockMovement
+    costPerYearUseStockMovement,
+    rankingProductsInStockUseStockMovement,
+    highRotationProductsUseStockMovement,
+    productsWithoutRecentMovementUseStockMovement
   };
 };

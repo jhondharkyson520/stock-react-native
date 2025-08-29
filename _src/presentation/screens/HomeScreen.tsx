@@ -6,9 +6,10 @@ import React from "react";
 import { Image, View } from "react-native";
 import { CreateEntryStockProductScreen } from "./CreateEntryStockProductScreen";
 import { CreateExitStockProductScreen } from "./CreateExitStockProductScreen";
+import { DashboardScreen } from "./DashboardScreen";
 import { ListOfProductsMinimumStockScreen } from "./ListOfProductsMinimumStockScreen";
-import { MainHomeScreen } from "./MainHomeScreen";
 import { ProductCreateScreen } from "./ProductCreateScreen";
+import { ProductEditScreen } from "./ProductEditScreen";
 import { ProductsListScreen } from "./ProductListScreen";
 import { StockListScreen } from "./StockListScreen";
 
@@ -31,22 +32,7 @@ function CustomDrawerContent(props: any) {
       <DrawerItem
         labelStyle={{ fontSize: 17, fontWeight: "bold" }}
         label="Home"
-        onPress={() => props.navigation.navigate("MainHomeScreen")}
-      />
-      <DrawerItem
-        labelStyle={{ fontSize: 17, fontWeight: "bold" }}
-        label="Entrada de produtos"
-        onPress={() => props.navigation.navigate("CreateEntryStockProductScreen")}
-      />
-      <DrawerItem
-        labelStyle={{ fontSize: 17, fontWeight: "bold" }}
-        label="Saída de produtos"
-        onPress={() => props.navigation.navigate("CreateExitStockProductScreen")}
-      />
-      <DrawerItem
-        labelStyle={{ fontSize: 17, fontWeight: "bold" }}
-        label="Novo Produto"
-        onPress={() => props.navigation.navigate("ProductCreateScreen")}
+        onPress={() => props.navigation.navigate("DashboardScreen")}
       />
       <DrawerItem
         labelStyle={{ fontSize: 17, fontWeight: "bold" }}
@@ -58,11 +44,6 @@ function CustomDrawerContent(props: any) {
         label="Estoque detalhado"
         onPress={() => props.navigation.navigate("StockListScreen")}
       />
-      <DrawerItem
-        labelStyle={{ fontSize: 17, fontWeight: "bold" }}
-        label="Lista de compras"
-        onPress={() => props.navigation.navigate("ListOfProductsMinimumStockScreen")}
-      />
     </DrawerContentScrollView>
   );
 }
@@ -72,7 +53,7 @@ export default function HomeScreen() {
 
   return (
     <Drawer.Navigator
-      initialRouteName="MainHomeScreen"
+      initialRouteName="DashboardScreen"
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
         headerShown: true,
@@ -84,8 +65,8 @@ export default function HomeScreen() {
       }}
     >
       <Drawer.Screen 
-        name="MainHomeScreen" 
-        component={MainHomeScreen} 
+        name="DashboardScreen" 
+        component={DashboardScreen} 
         options={{
         headerTitle: () => (
           <Image
@@ -95,7 +76,18 @@ export default function HomeScreen() {
         ),
           headerTitleAlign: "left",
         }}
+      />      
+      <Drawer.Screen 
+        name="ProductsListScreen" 
+        component={ProductsListScreen} 
+        options={{ title: "Lista de Produtos" }} 
       />
+      <Drawer.Screen 
+        name="StockListScreen" 
+        component={StockListScreen} 
+        options={{ title: "Controle de Estoque" }} 
+      />
+
       <Drawer.Screen 
         name="CreateEntryStockProductScreen" 
         component={CreateEntryStockProductScreen} 
@@ -111,21 +103,18 @@ export default function HomeScreen() {
         component={ProductCreateScreen} 
         options={{ title: "Novo Produto" }} 
       />
-      <Drawer.Screen 
-        name="ProductsListScreen" 
-        component={ProductsListScreen} 
-        options={{ title: "Produtos Cadastrados" }} 
-      />      
-      <Drawer.Screen 
-        name="StockListScreen" 
-        component={StockListScreen} 
-        options={{ title: "Controle de Estoque" }} 
-      />
+
       <Drawer.Screen 
         name="ListOfProductsMinimumStockScreen" 
         component={ListOfProductsMinimumStockScreen} 
         options={{ title: "Lista de compras" }} 
       />
+      <Drawer.Screen 
+        name="ProductEditScreen" 
+        component={ProductEditScreen} 
+        options={{ title: "Editar produto" }} 
+      />
+
     </Drawer.Navigator>
   );
 }

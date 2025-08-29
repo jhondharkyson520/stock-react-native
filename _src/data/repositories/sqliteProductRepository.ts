@@ -1,100 +1,136 @@
 import { Product } from "@/_src/domain/models/Products";
 import { IProductRepository } from "@/_src/domain/repositories/IProductRepository";
-import { SQLiteDatabase } from "expo-sqlite";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  DocumentSnapshot,
+  Firestore,
+  getDoc,
+  getDocs,
+  query,
+  QueryDocumentSnapshot,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 
 export class SQLiteProductRepository implements IProductRepository {
-    private db: SQLiteDatabase;
+  private productsCol;
 
-    constructor(db: SQLiteDatabase) {
-        if (!db) {
-        throw new Error("DB não pode ser nulo");
-        }
-        this.db = db;
-    }
-    async createProduct(product: Omit<Product, "id">): Promise<Product> {
-        const result = await this.db.runAsync(
-            `INSERT INTO products (name, code, description, qtd, value, image) VALUES (?, ?, ?, ?, ?, ?)`,
-            [
-                product.name,
-                product.code,
-                product.description,
-                Number(product.qtd),
-                Number(product.value),
-                product.image
-            ]
-        );
+  constructor(private db: Firestore) {
+    this.productsCol = collection(this.db, "products");
+  }
 
-        if (result.lastInsertRowId) {
-            return { id: String(result.lastInsertRowId), ...product };
-        }
+  async createProduct(product: Product): Promise<Product> {
+    const productRef = doc(this.productsCol, product.id ?? undefined);
 
-        throw new Error("Failed to create product.");
-    }
+    const newProduct: Product = {
+      ...product,
+      id: productRef.id,
+      created_date: new Date(),
+      updated_date: new Date(),
+    };
 
-    async getAllProducts(): Promise<Product[]> {
-        const result = await this.db.getAllAsync<Product>('SELECT * FROM products');
-        return result;
-    }
-  
-    async getByBarCodeProduct(code: string): Promise<Product | null> {        
-            const result = await this.db.getFirstAsync<Product>('SELECT * FROM products WHERE code=?', [code]);
-            return result ? (result as Product) : null;          
-    }
+    await setDoc(productRef, {
+      ...newProduct,
+      created_date: serverTimestamp(),
+      updated_date: serverTimestamp(),
+    });
 
-    async dumpProducts(): Promise<Product[]> {
-        try {
-            const allProducts = await this.db.getAllAsync<Product>('SELECT * FROM products');
-            console.log('Dump completo da tabela products:', allProducts);
-            return allProducts;
-        } catch (err) {
-            console.error('Erro no dump:', err);
-            return [];
-        }
-    }
+    return newProduct;
+  }
 
-    async updateProduct(product: Product): Promise<void> {      
-        if(product.id){
-            await this.db.runAsync(`UPDATE products SET name = ?, code = ?, description = ?, qtd = ?, value = ?, image = ? WHERE id = ?`,
-                [
-                    product.name,
-                    product.code,
-                    product.description,
-                    Number(product.qtd),
-                    Number(product.value),
-                    product.image,
-                    product.id
-                ]
-            );
-        }        
-    }
-    
-    async getByIdProduct(id: string): Promise<Product | null> {
-        const result = await this.db.getFirstAsync<Product>('SELECT * FROM products WHERE id=?', [id]);
-        return result ? (result as Product) : null;
-    }
+  async getAllProducts(): Promise<Product[]> {
+    const snapshot = await getDocs(this.productsCol);
+    return snapshot.docs.map((doc) => this.mapDocToProduct(doc));
+  }
 
-    async findByCode(code: string): Promise<Product | null> {
-        const result = await this.db.getFirstAsync("SELECT * FROM products WHERE code = ?", [code]);
-        return result ? (result as Product) : null;
-    }
+  async getByIdProduct(id: string): Promise<Product | null> {
+    const docRef = doc(this.productsCol, id);
+    const snapshot = await getDoc(docRef);
+    return snapshot.exists() ? this.mapDocToProduct(snapshot) : null;
+  }
 
-    async updateQuantity(code: string, qtd: number): Promise<void> {
-        await this.db.runAsync("UPDATE products SET qtd = ? WHERE code = ?", [qtd, code]);
-    }
+  async getByBarCodeProduct(code: string): Promise<Product | null> {
+    const q = query(this.productsCol, where("code", "==", code));
+    const snapshot = await getDocs(q);
+    if (snapshot.empty) return null;
+    return this.mapDocToProduct(snapshot.docs[0]);
+  }
 
-    async deleteProduct(id: string): Promise<void> {
-        await this.db.runAsync("DELETE FROM products WHERE id=?", [id]);
-    }
+  async updateProduct(product: Product): Promise<void> {
+    if (!product.id) throw new Error("ID do produto é obrigatório.");
+    const docRef = doc(this.productsCol, product.id);
+    await updateDoc(docRef, {
+      ...product,
+      updated_date: serverTimestamp(),
+    });
+  }
 
-    async listOfProductsOfQtdMinimumInStock(): Promise<Product[]> {
-        const result = await this.db.getAllAsync<Product>("SELECT * FROM products WHERE qtd < 3");
-        return result;
-    }
+  async deleteProduct(id: string): Promise<void> {
+    const docRef = doc(this.productsCol, id);
+    await deleteDoc(docRef);
+  }
 
-    async totalStockValueAndQuantity(): Promise<{ total_quantity: number; total_value: number }> {
-        const result = await this.db.getFirstAsync<{ total_quantity: number; total_value: number }>(
-        `SELECT SUM(qtd) AS total_quantity, SUM(qtd*value) AS total_value FROM products`
-        );
-        return { total_quantity: result?.total_quantity ?? 0, total_value: result?.total_value ?? 0 };
-    }
+  async findByCode(code: string): Promise<Product | null> {
+    return this.getByBarCodeProduct(code);
+  }
+
+  async updateQuantity(code: string, qtd: number): Promise<void> {
+    const product = await this.getByBarCodeProduct(code);
+    if (!product) return;
+    const docRef = doc(this.productsCol, product.id);
+    await updateDoc(docRef, { qtd, updated_date: serverTimestamp() });
+  }
+
+  async updateQuantityAndValue(code: string, qtd: number, value: number): Promise<void> {
+    const product = await this.getByBarCodeProduct(code);
+    if (!product) return;
+    const docRef = doc(this.productsCol, product.id);
+    await updateDoc(docRef, { qtd, value, updated_date: serverTimestamp() });
+  }
+
+  async listOfProductsOfQtdMinimumInStock(): Promise<Product[]> {
+    const q = query(this.productsCol, where("qtd", "<", 3));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((doc) => this.mapDocToProduct(doc));
+  }
+
+  async totalStockValueAndQuantity(): Promise<{ total_quantity: number; total_value: number }> {
+    const snapshot = await getDocs(this.productsCol);
+    let total_quantity = 0;
+    let total_value = 0;
+    snapshot.docs.forEach((doc) => {
+      const p = this.mapDocToProduct(doc);
+      total_quantity += p.qtd;
+      total_value += p.qtd * p.value;
+    });
+    return { total_quantity, total_value };
+  }
+
+  async dumpProducts(): Promise<Product[]> {
+    const snapshot = await getDocs(this.productsCol);
+    const products = snapshot.docs.map((doc) => this.mapDocToProduct(doc));
+    console.log("Dump completo da tabela products:", products);
+    return products;
+  }
+
+  private mapDocToProduct(doc: DocumentSnapshot | QueryDocumentSnapshot): Product {
+    const data = doc.data();
+    if (!data) return null as any;
+
+    return {
+      id: data.id ?? doc.id,
+      name: data.name,
+      code: data.code,
+      description: data.description ?? null,
+      qtd: data.qtd ?? 0,
+      value: data.value ?? 0,
+      image: data.image ?? "",
+      created_date: data.created_date?.toDate?.() ?? new Date(),
+      updated_date: data.updated_date?.toDate?.() ?? new Date(),
+    };
+  }
 }

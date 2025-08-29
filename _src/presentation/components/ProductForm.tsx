@@ -1,14 +1,14 @@
 import { Product } from "@/_src/domain/models/Products";
-import { formatToCurrencyInput } from "@/_src/utils/maskValue";
 import { useCameraPermissions } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useRef, useState } from "react";
 import { Alert, Image, ScrollView, Text, View } from "react-native";
+import v4 from "react-native-uuid";
 import { Container } from "../screens/style/container";
 import { shadowStyle } from "../screens/style/shadowStyle";
 import { InputBarCode } from "./InputBarCode";
-import { BorderFromImage, ButtonLarge, ContainerImageProduct, ContainerViewNumbers, InputText, InputTextValue, LabelText, LabelTextButton } from "./style/ProductFormStyle";
+import { BorderFromImage, ButtonLarge, ContainerImageProduct, InputText, LabelTextButton } from "./style/ProductFormStyle";
 
 interface ProductFormProps {
   onCreate: (product: Product) => Promise<void>;
@@ -17,6 +17,7 @@ interface ProductFormProps {
 
 export function ProductForm({ onCreate, loading }: ProductFormProps) {
   const [formData, setFormData] = useState({
+    id: '',
     name: '',
     code: '',
     description: '',
@@ -41,13 +42,15 @@ export function ProductForm({ onCreate, loading }: ProductFormProps) {
       const imageToSave = formData.image && formData.image !== "" ? formData.image : "blank";
       const newProduct: Product = {
         ...formData,
-        value: Number(formData.value) || 0,
+        id: v4.v4(),
+        value: 0,
         qtd: formData.qtd,
         image: imageToSave,
       };
       await onCreate(newProduct);
       Alert.alert("Sucesso", "Produto salvo com sucesso");
       setFormData({
+        id: '',
         name: "",
         code: "",
         description: "",
@@ -132,20 +135,6 @@ export function ProductForm({ onCreate, loading }: ProductFormProps) {
           value={formData.description}
           onChangeText={(text) => handleChange("description", text)}
         />
-
-        <ContainerViewNumbers>
-          <LabelText>Valor R$:</LabelText>
-          <InputTextValue
-            style={shadowStyle.shadow}
-            placeholderTextColor="#000000"
-            keyboardType="numeric"
-            value={formatToCurrencyInput(formData.value).display}
-            onChangeText={(text) => {
-              const { raw } = formatToCurrencyInput(text);
-              handleChange("value", raw);
-            }}
-          />
-        </ContainerViewNumbers>
 
         <InputBarCode
           onBarCodeScanned={(text) => handleChange("code", text)}

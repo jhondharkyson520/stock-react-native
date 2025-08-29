@@ -5,7 +5,9 @@ export class CreateStockMovementUseCase {
   constructor(private stockRepository: IStockMovementRepository) {}
 
   async execute(stockMovement: StockMovement): Promise<StockMovement> {
-    if(!stockMovement) throw new Error('Erro ao criar movimentação');
-    return await this.stockRepository.createStock(stockMovement);
+    if(!stockMovement) throw new Error('Erro ao criar movimentação');    
+    const valueResult = Number(stockMovement.qtd) * Number(stockMovement.cost)
+    const toSave = {...stockMovement, cost: valueResult}
+    return await this.stockRepository.createStock(toSave);
   }
 }

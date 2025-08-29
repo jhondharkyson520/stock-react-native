@@ -64,13 +64,16 @@ export function CreateEntryStockForm({loading, onCreate}: StockFormProps) {
         }
 
         const product = await productByBarCodeUseProducts(formData.product_id.toString());
+        
         if (!product) {
           Alert.alert("Erro", "Produto com o código de barras informado não está cadastrado.");
           return;
         }
 
-        const movementToSave = { ...formData, id: v4.v4() };
-        await handleIncreaseQtdProductUseProducts({ code: formData.product_id, qtd: formData.qtd });
+        if(!product.id) return;
+
+        const movementToSave = { ...formData, id: v4.v4(), product_id: product.id };
+        await handleIncreaseQtdProductUseProducts({ code: formData.product_id, qtd: formData.qtd, value: formData.cost });
         await onCreate(movementToSave);
         Alert.alert("Sucesso", "Lançamento de entrada feito com sucesso!");
         setFormData({

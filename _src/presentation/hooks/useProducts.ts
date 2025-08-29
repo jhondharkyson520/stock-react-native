@@ -1,5 +1,6 @@
 
-import { useDatabase } from "@/_src/data/db/DataBaseContext";
+
+import { useFirestore } from "@/_src/data/db/DataBaseContext";
 import { SQLiteProductRepository } from "@/_src/data/repositories/sqliteProductRepository";
 import { Product } from "@/_src/domain/models/Products";
 import { CreateProductUseCase } from "@/_src/usecases/product/CreateProductUseCase";
@@ -16,7 +17,7 @@ import { useCallback, useState } from "react";
 
 
 export const useProducts = () => {
-  const db = useDatabase();
+  const db = useFirestore();
   const productRepository = new SQLiteProductRepository(db);
   const createProductUseCase = new CreateProductUseCase(productRepository);
   const getProductsUseCase = new GetProductsUseCase(productRepository);
@@ -31,7 +32,7 @@ export const useProducts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const handleCreateProductUseProducts = async (product: Omit<Product, "id">) => {
+  const handleCreateProductUseProducts = async (product: Product) => {
     try {
       await createProductUseCase.execute(product);
       setProducts([]);
@@ -66,14 +67,14 @@ export const useProducts = () => {
     await updateProductUseCase.execute(product);
   };
 
-  const handleIncreaseQtdProductUseProducts = async (product: { code?: string; qtd?: number }) => {
-    if (!product.code || !product.qtd) {
+  const handleIncreaseQtdProductUseProducts = async (product: { code?: string; qtd?: number, value?: number }) => {
+    if (!product.code || !product.qtd || !product.value) {
       throw new Error("Code and QTD required");
     }
-    await increaseQtdProductUseCase.execute(product.code, product.qtd);
+    await increaseQtdProductUseCase.execute(product.code, product.qtd, product.value);
   };
 
-  const handleDecreaseQtdProductUseProducts = async (product: { code?: string; qtd?: number }) => {
+  const handleDecreaseQtdProductUseProducts = async (product: { code?: string; qtd?: number; }) => {
     if (!product.code || !product.qtd) {
       throw new Error("Code and QTD required");
     }
