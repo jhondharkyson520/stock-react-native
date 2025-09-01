@@ -14,7 +14,7 @@ import 'dotenv/config';
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/LogoPinguim.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
