@@ -112,7 +112,7 @@ export function DashboardScreen() {
 
     return (
         <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 50 }}>
-            <Text style={styles.title}>Dashboard do Estoque</Text>
+            <Text style={styles.title}>Tela inicial</Text>
 
             <View style={styles.buttonRow}>
                 <TouchableOpacity

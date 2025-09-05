@@ -31,7 +31,7 @@ function CustomDrawerContent(props: any) {
       </View>
       <DrawerItem
         labelStyle={{ fontSize: 17, fontWeight: "bold" }}
-        label="Home"
+        label="Tela inicial"
         onPress={() => props.navigation.navigate("DashboardScreen")}
       />
       <DrawerItem
