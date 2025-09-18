@@ -1,11 +1,11 @@
 import 'dotenv/config';
  export default () => ({
   "expo": {
-    "name": "stock",
+    "name": "Gerenciamento de Negócio",
     "slug": "stock",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/LogoPinguim.png",
+    "icon": "./assets/LogoApp.png",
     "scheme": "stock",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -14,7 +14,7 @@ import 'dotenv/config';
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/LogoAppTransparent.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
@@ -34,7 +34,7 @@ import 'dotenv/config';
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/LogoLoadingApp.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
