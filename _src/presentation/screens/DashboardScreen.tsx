@@ -147,7 +147,12 @@ export function DashboardScreen() {
             <View style={styles.pickerRow}>
                 <View style={styles.pickerColumn}>
                     <Text>Mês</Text>
-                    <Picker selectedValue={month} onValueChange={setMonth} style={styles.picker}>
+                    <Picker 
+                        selectedValue={month} 
+                        onValueChange={setMonth} 
+                        style={styles.picker}
+                        dropdownIconColor="#000"
+                    >
                         {Array.from({ length: 12 }, (_, i) => (
                             <Picker.Item key={i + 1} label={`${i + 1}`} value={i + 1} />
                         ))}
@@ -157,7 +162,12 @@ export function DashboardScreen() {
                 {firstYear && (
                     <View style={styles.pickerColumn}>
                         <Text>Ano</Text>
-                        <Picker selectedValue={year} onValueChange={setYear} style={styles.picker}>
+                        <Picker 
+                            selectedValue={year} 
+                            onValueChange={setYear} 
+                            style={styles.picker} 
+                            dropdownIconColor="#000"
+                        >
                             {Array.from({ length: new Date().getFullYear() - firstYear + 1 }, (_, i) => {
                                 const y = firstYear + i;
                                 return <Picker.Item key={y} label={`${y}`} value={y} />;
@@ -271,12 +281,19 @@ const styles = StyleSheet.create({
     },
     picker: {
         width: '100%',
+        borderWidth: 1,
+        borderColor: "#ccc",
+        color:"#000",
+        borderRadius: 8,
+        backgroundColor: "#f9f9f9",
+        height: 50,
+        justifyContent: "center",
     },
     buttonRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginVertical: 15,
-    flexWrap: "wrap", // permite quebrar a linha se não couber
+    flexWrap: "wrap",
     },
     buttonCard: {
     flex: 1,

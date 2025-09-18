@@ -5,6 +5,7 @@ node_modules/
 google-services.json
 .env
 app.json
+easconfidential.json
 
 # Expo
 .expo/
