@@ -4,4 +4,6 @@ export interface User {
     email: string;
     password: string;
     type: string; //administrador ou comum
+    created_date?: Date;
+    updated_date?: Date;
 }

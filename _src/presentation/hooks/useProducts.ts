@@ -1,5 +1,3 @@
-
-
 import { useFirestore } from "@/_src/data/db/DataBaseContext";
 import { SQLiteProductRepository } from "@/_src/data/repositories/sqliteProductRepository";
 import { Product } from "@/_src/domain/models/Products";
